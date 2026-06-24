@@ -3,185 +3,161 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#21142c" />
-  <meta name="color-scheme" content="dark" />
+  <title>Lily RP</title>
 
+  <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="LilyTavern" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="apple-touch-icon" href="./icons/icon-180.png" />
+  <meta name="apple-mobile-web-app-title" content="Lily RP" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="stylesheet" href="./style.css" />
-
-  <title>Lily Tavern RP</title>
+  <link rel="stylesheet" href="./style.css?v=white1" />
 </head>
+
 <body>
-  <div class="ambient ambient-one" aria-hidden="true"></div>
-  <div class="ambient ambient-two" aria-hidden="true"></div>
-
-  <div class="app-shell">
-    <aside class="side-panel">
-      <div class="brand-card">
-        <div class="brand-mark">✦</div>
-        <div>
-          <p class="eyebrow">private roleplay web</p>
-          <h1>Lily Tavern</h1>
-          <p id="statusText" class="status-pill">未连接</p>
-        </div>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <h1>Lily RP</h1>
+        <p id="subtitle">DeepSeek 角色扮演网页</p>
       </div>
-
-      <section class="profile-card">
-        <div class="profile-head">
-          <div class="avatar" id="characterAvatar">莉</div>
-          <div>
-            <p class="eyebrow">当前角色</p>
-            <h2 id="characterTitle">未设置角色</h2>
-          </div>
-        </div>
-        <p id="scenePreview" class="scene-preview">点「角色卡」写入角色设定、世界观和剧情记忆。</p>
-      </section>
-
-      <div class="quick-actions">
-        <button id="characterBtn" class="soft-button" type="button">角色卡</button>
-        <button id="settingsBtn" class="soft-button" type="button">连接设置</button>
-        <button id="exportBtn" class="soft-button" type="button">导出</button>
-        <button id="clearBtn" class="soft-button danger" type="button">清空</button>
+      <div class="top-actions">
+        <button id="characterBtn" type="button" class="ghost">角色卡</button>
+        <button id="settingsBtn" type="button" class="ghost">设置</button>
       </div>
+    </header>
 
-      <section class="tips-card">
-        <p class="eyebrow">RP 小提示</p>
-        <p>用「我」写自己的动作；让模型只扮演角色和环境。剧情长了以后，把关键设定写进「长期记忆」。</p>
+    <main class="layout">
+      <aside class="side">
+        <section class="panel">
+          <h2 id="characterTitle">未设置角色</h2>
+          <p id="scenePreview">点击「角色卡」写入角色设定、场景和记忆。</p>
+        </section>
+
+        <section class="panel">
+          <h3>状态</h3>
+          <p id="connectionStatus">未连接</p>
+        </section>
+
+        <section class="panel small">
+          <h3>建议</h3>
+          <p>模型：deepseek-v4-flash</p>
+          <p>温度：0.9</p>
+          <p>思考模式：关闭</p>
+        </section>
+      </aside>
+
+      <section class="chat-area">
+        <div id="chat" class="chat"></div>
+
+        <form id="composer" class="composer">
+          <textarea id="userInput" rows="1" placeholder="输入你的台词、动作或剧情……"></textarea>
+          <button id="continueBtn" type="button" class="secondary">续写</button>
+          <button id="sendBtn" type="submit">发送</button>
+        </form>
       </section>
-    </aside>
-
-    <main class="chat-panel">
-      <header class="mobile-topbar">
-        <div>
-          <p class="eyebrow">Lily Tavern</p>
-          <h2 id="mobileCharacterTitle">角色扮演</h2>
-        </div>
-        <div class="mobile-actions">
-          <button id="mobileCharacterBtn" class="icon-button" type="button">卡</button>
-          <button id="mobileSettingsBtn" class="icon-button" type="button">设</button>
-        </div>
-      </header>
-
-      <div id="chat" class="chat" aria-live="polite"></div>
-
-      <form id="composer" class="composer">
-        <button id="continueBtn" class="mini-button" type="button">续写</button>
-        <textarea id="userInput" rows="1" placeholder="输入你的行动、台词或剧情要求…" autocomplete="off"></textarea>
-        <button id="sendBtn" class="send-button" type="submit">发送</button>
-      </form>
     </main>
   </div>
 
-  <dialog id="characterDialog" class="dialog large-dialog">
-    <form method="dialog" class="panel-form">
-      <div class="dialog-title">
-        <div>
-          <p class="eyebrow">character sheet</p>
-          <h2>角色卡 / 酒馆设定</h2>
-        </div>
-        <button id="closeCharacter" class="round-close" type="button">×</button>
+  <dialog id="settingsDialog">
+    <form class="dialog-card" method="dialog">
+      <div class="dialog-head">
+        <h2>设置</h2>
+        <button id="closeSettings" type="button" class="icon-btn">×</button>
       </div>
 
-      <div class="form-grid">
+      <label>
+        Worker 接口地址
+        <input id="workerUrl" value="https://deepseek-proxy.marea-deepseek-web.workers.dev/chat" />
+      </label>
+
+      <label>
+        APP_TOKEN
+        <input id="appToken" type="password" placeholder="输入你在 Cloudflare 设置的 APP_TOKEN" />
+      </label>
+
+      <label>
+        模型
+        <select id="modelSelect">
+          <option value="deepseek-v4-flash">deepseek-v4-flash</option>
+          <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+        </select>
+      </label>
+
+      <div class="grid">
         <label>
-          角色名
-          <input id="characterName" placeholder="例如：莉莉 / 卡洛斯 / 小狐娘" />
+          Temperature
+          <input id="temperature" type="number" min="0" max="2" step="0.1" value="0.9" />
         </label>
 
         <label>
-          你的称呼
-          <input id="playerName" placeholder="例如：旅行者 / 主人 / Lily" />
+          Max Tokens
+          <input id="maxTokens" type="number" min="256" max="4000" step="100" value="2800" />
+        </label>
+      </div>
+
+      <label class="check">
+        <input id="thinkingMode" type="checkbox" />
+        开启思考模式
+      </label>
+
+      <div class="dialog-actions">
+        <button id="clearBtn" type="button" class="danger">清空对话</button>
+        <span></span>
+        <button id="cancelSettings" type="button" class="secondary">取消</button>
+        <button id="saveSettings" type="button">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="characterDialog">
+    <form class="dialog-card wide" method="dialog">
+      <div class="dialog-head">
+        <h2>角色卡</h2>
+        <button id="closeCharacter" type="button" class="icon-btn">×</button>
+      </div>
+
+      <div class="grid">
+        <label>
+          角色名
+          <input id="characterName" placeholder="例如：莉莉娅" />
+        </label>
+
+        <label>
+          你的昵称
+          <input id="playerName" placeholder="例如：旅人" />
         </label>
       </div>
 
       <label>
         角色设定
-        <textarea id="characterPrompt" rows="5" placeholder="写角色外貌、性格、说话方式、关系、禁忌、目标等。"></textarea>
+        <textarea id="characterPrompt" rows="5" placeholder="写角色身份、性格、说话方式、关系、禁忌等。"></textarea>
       </label>
 
       <label>
-        场景 / 世界观
-        <textarea id="scenarioPrompt" rows="4" placeholder="例如：雨夜酒馆、赛博城市、魔法学院、当前剧情背景等。"></textarea>
+        场景设定
+        <textarea id="scenarioPrompt" rows="5" placeholder="写当前地点、世界观、开场剧情、当前任务等。"></textarea>
       </label>
 
       <label>
         长期记忆
-        <textarea id="memoryPrompt" rows="4" placeholder="把重要剧情、关系变化、承诺、已发生事件写在这里，剧情越长越有用。"></textarea>
+        <textarea id="memoryPrompt" rows="4" placeholder="写已经发生的重要事件、关系变化、约定等。"></textarea>
       </label>
 
       <label>
         回复风格
-        <textarea id="stylePrompt" rows="3" placeholder="例如：沉浸、细腻、有画面感；不要替用户说话；每次 2-6 段。"></textarea>
+        <textarea id="stylePrompt" rows="4" placeholder="例如：沉浸式描写；不要代替用户发言；每次回复 2-6 段。"></textarea>
       </label>
 
-      <menu>
-        <button value="cancel" type="button" id="cancelCharacter" class="secondary">取消</button>
-        <button value="default" type="submit" id="saveCharacter">保存角色卡</button>
-      </menu>
+      <div class="dialog-actions">
+        <button id="exportBtn" type="button" class="secondary">导出存档</button>
+        <span></span>
+        <button id="cancelCharacter" type="button" class="secondary">取消</button>
+        <button id="saveCharacter" type="button">保存角色卡</button>
+      </div>
     </form>
   </dialog>
 
-  <dialog id="settingsDialog" class="dialog">
-    <form method="dialog" class="panel-form">
-      <div class="dialog-title">
-        <div>
-          <p class="eyebrow">connection</p>
-          <h2>连接设置</h2>
-        </div>
-        <button id="closeSettings" class="round-close" type="button">×</button>
-      </div>
-
-      <p class="hint">DeepSeek API Key 不在这里填写；它已经保存在 Cloudflare Worker Secret 里。</p>
-
-      <label>
-        Worker 接口地址
-        <input id="workerUrl" inputmode="url" placeholder="https://xxx.workers.dev/chat" />
-      </label>
-
-      <label>
-        APP_TOKEN
-        <input id="appToken" type="password" placeholder="你在 Cloudflare 里设置的 APP_TOKEN" />
-      </label>
-
-      <div class="form-grid">
-        <label>
-          模型
-          <select id="modelSelect">
-            <option value="deepseek-v4-flash">deepseek-v4-flash · 推荐 RP</option>
-            <option value="deepseek-v4-pro">deepseek-v4-pro · 复杂剧情</option>
-          </select>
-        </label>
-
-        <label>
-          创造性 temperature
-          <input id="temperature" type="number" min="0" max="1.5" step="0.1" />
-        </label>
-      </div>
-
-      <div class="form-grid">
-        <label>
-          输出长度 max_tokens
-          <input id="maxTokens" type="number" min="300" max="4000" step="100" />
-        </label>
-
-        <label class="toggle-line">
-          <input id="thinkingMode" type="checkbox" />
-          <span>启用 thinking mode</span>
-        </label>
-      </div>
-
-      <menu>
-        <button value="cancel" type="button" id="cancelSettings" class="secondary">取消</button>
-        <button value="default" type="submit" id="saveSettings">保存设置</button>
-      </menu>
-    </form>
-  </dialog>
-
-  <script src="./app.js"></script>
+  <script src="./app.js?v=white1"></script>
 </body>
 </html>
