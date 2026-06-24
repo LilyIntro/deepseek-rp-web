@@ -1,369 +1,172 @@
-const DEFAULTS = {
-  workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat",
-  model: "deepseek-v4-flash",
-  temperature: 0.9,
-  maxTokens: 2800,
-  thinkingMode: false,
-  characterName: "",
-  playerName: "",
-  characterPrompt: "",
-  scenarioPrompt: "",
-  memoryPrompt: "",
-  stylePrompt: "沉浸式角色扮演；描写有画面感；保持角色性格一致；不要替用户说话或替用户做决定；每次回复 2-6 段。",
-};
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-const $ = (selector) => document.querySelector(selector);
+  <title>Lily Tavern RP</title>
 
-const chatEl = $("#chat");
-const composer = $("#composer");
-const userInput = $("#userInput");
-const sendBtn = $("#sendBtn");
-const continueBtn = $("#continueBtn");
-const clearBtn = $("#clearBtn");
-const exportBtn = $("#exportBtn");
-const statusText = $("#statusText");
-const characterTitle = $("#characterTitle");
-const mobileCharacterTitle = $("#mobileCharacterTitle");
-const characterAvatar = $("#characterAvatar");
-const scenePreview = $("#scenePreview");
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Lily RP" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-const settingsDialog = $("#settingsDialog");
-const settingsBtn = $("#settingsBtn");
-const mobileSettingsBtn = $("#mobileSettingsBtn");
-const closeSettings = $("#closeSettings");
-const cancelSettings = $("#cancelSettings");
-const saveSettings = $("#saveSettings");
-const workerUrlInput = $("#workerUrl");
-const appTokenInput = $("#appToken");
-const modelSelect = $("#modelSelect");
-const temperatureInput = $("#temperature");
-const maxTokensInput = $("#maxTokens");
-const thinkingModeInput = $("#thinkingMode");
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
 
-const characterDialog = $("#characterDialog");
-const characterBtn = $("#characterBtn");
-const mobileCharacterBtn = $("#mobileCharacterBtn");
-const closeCharacter = $("#closeCharacter");
-const cancelCharacter = $("#cancelCharacter");
-const saveCharacter = $("#saveCharacter");
-const characterNameInput = $("#characterName");
-const playerNameInput = $("#playerName");
-const characterPromptInput = $("#characterPrompt");
-const scenarioPromptInput = $("#scenarioPrompt");
-const memoryPromptInput = $("#memoryPrompt");
-const stylePromptInput = $("#stylePrompt");
-
-let messages = JSON.parse(localStorage.getItem("rp_messages") || "[]");
-
-function readNumber(key, fallback) {
-  const value = Number(localStorage.getItem(key));
-  return Number.isFinite(value) ? value : fallback;
-}
-
-function getSettings() {
-  return {
-    workerUrl: localStorage.getItem("ds_worker_url") || DEFAULTS.workerUrl,
-    appToken: localStorage.getItem("ds_app_token") || "",
-    model: localStorage.getItem("ds_model") || DEFAULTS.model,
-    temperature: readNumber("rp_temperature", DEFAULTS.temperature),
-    maxTokens: readNumber("rp_max_tokens", DEFAULTS.maxTokens),
-    thinkingMode: localStorage.getItem("ds_thinking_mode") === "true",
-    characterName: localStorage.getItem("rp_character_name") || DEFAULTS.characterName,
-    playerName: localStorage.getItem("rp_player_name") || DEFAULTS.playerName,
-    characterPrompt: localStorage.getItem("rp_character_prompt") || DEFAULTS.characterPrompt,
-    scenarioPrompt: localStorage.getItem("rp_scenario_prompt") || DEFAULTS.scenarioPrompt,
-    memoryPrompt: localStorage.getItem("rp_memory_prompt") || DEFAULTS.memoryPrompt,
-    stylePrompt: localStorage.getItem("rp_style_prompt") || DEFAULTS.stylePrompt,
-  };
-}
-
-function setConnectionSettings(next) {
-  localStorage.setItem("ds_worker_url", next.workerUrl.trim());
-  localStorage.setItem("ds_app_token", next.appToken.trim());
-  localStorage.setItem("ds_model", next.model);
-  localStorage.setItem("rp_temperature", String(next.temperature));
-  localStorage.setItem("rp_max_tokens", String(next.maxTokens));
-  localStorage.setItem("ds_thinking_mode", String(next.thinkingMode));
-  refreshChrome();
-}
-
-function setCharacterSettings(next) {
-  localStorage.setItem("rp_character_name", next.characterName.trim());
-  localStorage.setItem("rp_player_name", next.playerName.trim());
-  localStorage.setItem("rp_character_prompt", next.characterPrompt.trim());
-  localStorage.setItem("rp_scenario_prompt", next.scenarioPrompt.trim());
-  localStorage.setItem("rp_memory_prompt", next.memoryPrompt.trim());
-  localStorage.setItem("rp_style_prompt", next.stylePrompt.trim() || DEFAULTS.stylePrompt);
-  refreshChrome();
-  render();
-}
-
-function refreshChrome() {
-  const s = getSettings();
-  const hasWorker = s.workerUrl && !s.workerUrl.includes("YOUR-WORKER-NAME");
-  const hasToken = Boolean(s.appToken);
-
-  statusText.textContent = hasWorker && hasToken
-    ? `${s.model} · 已连接`
-    : hasWorker
-      ? `${s.model} · 缺少 APP_TOKEN`
-      : "需要 Worker 地址";
-
-  const name = s.characterName || "未设置角色";
-  characterTitle.textContent = name;
-  mobileCharacterTitle.textContent = s.characterName || "角色扮演";
-  characterAvatar.textContent = (s.characterName || "莉").trim().slice(0, 1);
-
-  const preview = s.scenarioPrompt || s.characterPrompt || "点「角色卡」写入角色设定、世界观和剧情记忆。";
-  scenePreview.textContent = preview.length > 118 ? `${preview.slice(0, 118)}…` : preview;
-}
-
-function persistMessages() {
-  localStorage.setItem("rp_messages", JSON.stringify(messages.slice(-100)));
-}
-
-function addMessage(role, content) {
-  const row = document.createElement("div");
-  row.className = `message-row ${role}`;
-  const bubble = document.createElement("div");
-  bubble.className = "message";
-  bubble.textContent = String(content ?? "");
-  row.appendChild(bubble);
-  chatEl.appendChild(row);
-  chatEl.scrollTop = chatEl.scrollHeight;
-  return row;
-}
-
-function addNote(content) {
-  const note = document.createElement("div");
-  note.className = "system-note";
-  note.textContent = content;
-  chatEl.appendChild(note);
-  chatEl.scrollTop = chatEl.scrollHeight;
-  return note;
-}
-
-function render() {
-  chatEl.innerHTML = "";
-
-  if (messages.length === 0) {
-    const s = getSettings();
-    const empty = document.createElement("section");
-    empty.className = "empty";
-    empty.innerHTML = `
-      <div class="empty-inner">
-        <p class="eyebrow">welcome to tavern</p>
-        <h2>${s.characterName ? `和 ${escapeHtml(s.characterName)} 开始一段剧情` : "写好角色卡，然后开场"}</h2>
-        <p>${s.characterName ? "输入你的第一句话、动作或开场场景。也可以点「续写」让角色先开口。" : "先点左侧或右上角「角色卡」，写入角色设定、场景和长期记忆。"}</p>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">✦</div>
+        <div>
+          <h1>Lily Tavern</h1>
+          <p>DeepSeek RP Web</p>
+        </div>
       </div>
-    `;
-    chatEl.appendChild(empty);
-    return;
-  }
 
-  for (const msg of messages) addMessage(msg.role, msg.content);
-}
+      <section class="card character-card">
+        <div class="character-avatar" id="characterAvatar">莉</div>
+        <h2 id="characterTitle">未设置角色</h2>
+        <p id="scenePreview">先点「角色卡」写入角色设定、场景和长期记忆。</p>
+        <button id="characterBtn" type="button">角色卡</button>
+      </section>
 
-function escapeHtml(text) {
-  return String(text).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
-}
+      <section class="card">
+        <h3>连接状态</h3>
+        <p id="settingsText">未连接</p>
+        <button id="settingsBtn" type="button">设置</button>
+      </section>
 
-function buildSystemPrompt() {
-  const s = getSettings();
-  const parts = [
-    "你是一个沉浸式角色扮演引擎。请严格根据用户提供的角色卡、场景和历史对话推进剧情。",
-    "重要规则：只扮演角色、NPC、环境和旁白；不要替用户发言；不要替用户做决定；保持连续性；除非用户要求，不要跳出角色解释规则。",
-    s.characterName ? `你主要扮演的角色名：${s.characterName}` : "",
-    s.playerName ? `用户/玩家称呼：${s.playerName}` : "",
-    s.characterPrompt ? `角色设定：\n${s.characterPrompt}` : "",
-    s.scenarioPrompt ? `场景/世界观：\n${s.scenarioPrompt}` : "",
-    s.memoryPrompt ? `长期记忆：\n${s.memoryPrompt}` : "",
-    s.stylePrompt ? `回复风格：\n${s.stylePrompt}` : "",
-  ];
-  return parts.filter(Boolean).join("\n\n");
-}
+      <section class="card tips">
+        <h3>小提示</h3>
+        <p>适合酒馆、OC、剧情推进、沉浸式角色扮演。</p>
+        <p>建议模型：deepseek-v4-flash</p>
+        <p>建议温度：0.8 - 1.0</p>
+      </section>
+    </aside>
 
-async function callWorker(userText) {
-  const s = getSettings();
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">welcome to tavern</p>
+          <h2 id="mobileCharacterTitle">Lily Tavern</h2>
+        </div>
 
-  if (!s.workerUrl || s.workerUrl.includes("YOUR-WORKER-NAME")) {
-    throw new Error("请先在连接设置里填写 Cloudflare Worker 接口地址。格式类似：https://xxx.workers.dev/chat");
-  }
-  if (!s.appToken) {
-    throw new Error("请先在连接设置里填写 APP_TOKEN。这个不是 DeepSeek API Key，而是你自己设置的网页访问密码。");
-  }
+        <div class="top-actions">
+          <button id="mobileCharacterBtn" type="button">角色卡</button>
+          <button id="clearBtn" type="button">清空</button>
+        </div>
+      </header>
 
-  const requestMessages = [
-    { role: "system", content: buildSystemPrompt() },
-    ...messages.slice(-40),
-    { role: "user", content: userText },
-  ];
+      <section id="chat" class="chat"></section>
 
-  const response = await fetch(s.workerUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-App-Token": s.appToken,
-    },
-    body: JSON.stringify({
-      model: s.model,
-      messages: requestMessages,
-      temperature: s.temperature,
-      max_tokens: Math.max(300, Math.min(Number(s.maxTokens) || DEFAULTS.maxTokens, 4000)),
-      thinking: s.thinkingMode,
-    }),
-  });
+      <form id="composer" class="composer">
+        <textarea id="userInput" rows="1" placeholder="输入你的动作、台词或剧情……"></textarea>
+        <div class="composer-actions">
+          <button id="continueBtn" type="button">续写</button>
+          <button id="sendBtn" type="submit">发送</button>
+        </div>
+      </form>
+    </main>
+  </div>
 
-  const data = await response.json().catch(() => ({}));
+  <dialog id="settingsDialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-head">
+        <h2>连接设置</h2>
+        <button id="closeSettings" type="button">×</button>
+      </div>
 
-  if (!response.ok) {
-    const detail = typeof data.detail === "string" ? data.detail : "";
-    throw new Error(data.error || detail || `请求失败：HTTP ${response.status}`);
-  }
+      <label>
+        Worker 接口地址
+        <input id="workerUrl" value="https://deepseek-proxy.marea-deepseek-web.workers.dev/chat" />
+      </label>
 
-  return data.choices?.[0]?.message?.content || "没有收到有效回复。";
-}
+      <label>
+        APP_TOKEN
+        <input id="appToken" type="password" placeholder="输入你在 Cloudflare 设置的 APP_TOKEN" />
+      </label>
 
-async function sendUserText(text) {
-  const trimmed = text.trim();
-  if (!trimmed) return;
+      <label>
+        模型
+        <select id="modelSelect">
+          <option value="deepseek-v4-flash">deepseek-v4-flash</option>
+          <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+        </select>
+      </label>
 
-  userInput.value = "";
-  userInput.style.height = "auto";
-  sendBtn.disabled = true;
-  continueBtn.disabled = true;
+      <div class="grid-2">
+        <label>
+          Temperature
+          <input id="temperature" type="number" min="0" max="2" step="0.1" value="0.9" />
+        </label>
 
-  messages.push({ role: "user", content: trimmed });
-  persistMessages();
-  render();
+        <label>
+          Max Tokens
+          <input id="maxTokens" type="number" min="256" max="4000" step="100" value="2800" />
+        </label>
+      </div>
 
-  const note = addNote("烛火摇曳，剧情正在生成…");
+      <label class="check">
+        <input id="thinkingMode" type="checkbox" />
+        开启思考模式
+      </label>
 
-  try {
-    const reply = await callWorker(trimmed);
-    note.remove();
-    messages.push({ role: "assistant", content: reply });
-    persistMessages();
-    render();
-  } catch (error) {
-    note.textContent = `错误：${error.message}`;
-    if (String(error.message).includes("设置") || String(error.message).includes("APP_TOKEN")) {
-      fillSettingsDialog();
-      settingsDialog.showModal();
-    }
-  } finally {
-    sendBtn.disabled = false;
-    continueBtn.disabled = false;
-    userInput.focus();
-  }
-}
+      <div class="dialog-actions">
+        <button id="cancelSettings" type="button">取消</button>
+        <button id="saveSettings" type="button">保存</button>
+      </div>
+    </form>
+  </dialog>
 
-composer.addEventListener("submit", (event) => {
-  event.preventDefault();
-  sendUserText(userInput.value);
-});
+  <dialog id="characterDialog">
+    <form method="dialog" class="dialog-card wide">
+      <div class="dialog-head">
+        <h2>角色卡</h2>
+        <button id="closeCharacter" type="button">×</button>
+      </div>
 
-continueBtn.addEventListener("click", () => {
-  const s = getSettings();
-  const prompt = s.characterName
-    ? `请让${s.characterName}根据当前场景自然继续剧情。不要替我发言。`
-    : "请根据当前场景自然继续剧情。不要替我发言。";
-  sendUserText(prompt);
-});
+      <div class="grid-2">
+        <label>
+          角色名
+          <input id="characterName" placeholder="例如：莉莉娅" />
+        </label>
 
-userInput.addEventListener("input", () => {
-  userInput.style.height = "auto";
-  userInput.style.height = `${Math.min(userInput.scrollHeight, 180)}px`;
-});
+        <label>
+          你的昵称
+          <input id="playerName" placeholder="例如：旅人" />
+        </label>
+      </div>
 
-function fillSettingsDialog() {
-  const s = getSettings();
-  workerUrlInput.value = s.workerUrl;
-  appTokenInput.value = s.appToken;
-  modelSelect.value = s.model;
-  temperatureInput.value = s.temperature;
-  maxTokensInput.value = s.maxTokens;
-  thinkingModeInput.checked = s.thinkingMode;
-}
+      <label>
+        角色设定
+        <textarea id="characterPrompt" rows="5" placeholder="写角色身份、性格、说话方式、禁忌、关系等。"></textarea>
+      </label>
 
-function fillCharacterDialog() {
-  const s = getSettings();
-  characterNameInput.value = s.characterName;
-  playerNameInput.value = s.playerName;
-  characterPromptInput.value = s.characterPrompt;
-  scenarioPromptInput.value = s.scenarioPrompt;
-  memoryPromptInput.value = s.memoryPrompt;
-  stylePromptInput.value = s.stylePrompt;
-}
+      <label>
+        场景设定
+        <textarea id="scenarioPrompt" rows="5" placeholder="写当前地点、世界观、开场剧情、当前任务等。"></textarea>
+      </label>
 
-function openSettings() {
-  fillSettingsDialog();
-  settingsDialog.showModal();
-}
+      <label>
+        长期记忆
+        <textarea id="memoryPrompt" rows="4" placeholder="写已经发生的重要事件、关系变化、约定等。"></textarea>
+      </label>
 
-function openCharacter() {
-  fillCharacterDialog();
-  characterDialog.showModal();
-}
+      <label>
+        回复风格
+        <textarea id="stylePrompt" rows="4" placeholder="例如：沉浸式描写；不要代替用户发言；每次回复 2-6 段。"></textarea>
+      </label>
 
-settingsBtn.addEventListener("click", openSettings);
-mobileSettingsBtn.addEventListener("click", openSettings);
-closeSettings.addEventListener("click", () => settingsDialog.close());
-cancelSettings.addEventListener("click", () => settingsDialog.close());
+      <div class="dialog-actions">
+        <button id="cancelCharacter" type="button">取消</button>
+        <button id="saveCharacter" type="button">保存角色卡</button>
+      </div>
+    </form>
+  </dialog>
 
-saveSettings.addEventListener("click", () => {
-  setConnectionSettings({
-    workerUrl: workerUrlInput.value,
-    appToken: appTokenInput.value,
-    model: modelSelect.value,
-    temperature: Number(temperatureInput.value) || DEFAULTS.temperature,
-    maxTokens: Number(maxTokensInput.value) || DEFAULTS.maxTokens,
-    thinkingMode: thinkingModeInput.checked,
-  });
-});
-
-characterBtn.addEventListener("click", openCharacter);
-mobileCharacterBtn.addEventListener("click", openCharacter);
-closeCharacter.addEventListener("click", () => characterDialog.close());
-cancelCharacter.addEventListener("click", () => characterDialog.close());
-
-saveCharacter.addEventListener("click", () => {
-  setCharacterSettings({
-    characterName: characterNameInput.value,
-    playerName: playerNameInput.value,
-    characterPrompt: characterPromptInput.value,
-    scenarioPrompt: scenarioPromptInput.value,
-    memoryPrompt: memoryPromptInput.value,
-    stylePrompt: stylePromptInput.value,
-  });
-});
-
-clearBtn.addEventListener("click", () => {
-  const ok = confirm("确定清空本机保存的对话吗？角色卡不会被删除。");
-  if (!ok) return;
-  messages = [];
-  persistMessages();
-  render();
-});
-
-exportBtn.addEventListener("click", () => {
-  const data = {
-    exportedAt: new Date().toISOString(),
-    settings: getSettings(),
-    messages,
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `lily-tavern-save-${Date.now()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js").catch(() => {});
-}
-
-refreshChrome();
-render();
+  <script src="./app.js"></script>
+</body>
+</html>
