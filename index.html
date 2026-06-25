@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lily RP v6.3 Workbench</title>
+  <title>Lily RP v6.4 Mobile Workbench</title>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Lily RP" />
@@ -104,16 +104,70 @@
     .toast { position: fixed; left: 50%; bottom: 94px; transform: translateX(-50%); max-width: min(760px, calc(100vw - 28px)); z-index: 100; background: var(--toast); color: #fff; border-radius: 999px; padding: 10px 15px; box-shadow: 0 16px 44px rgba(15,23,42,.28); display: none; white-space: pre-wrap; }
     .toast.show { display: block; } .toast.err { background: #991b1b; }
     .hidden { display: none !important; }
-    @media (max-width: 980px) { .header-inner { align-items: flex-start; flex-direction: column; } .toolbar { justify-content: flex-start; } .main { grid-template-columns: 1fr; padding: 12px; } .chat { max-height: none; min-height: 54dvh; } .chat-card { min-height: auto; } .composer { grid-template-columns: 1fr; } .send-row { justify-content: flex-end; } .manage-grid { grid-template-columns: 1fr; } .grid2,.grid3 { grid-template-columns: 1fr; } }
-    @media (max-width: 560px) { .toolbar button,.send-row button { flex: 1; } .toolbar,.send-row { width: 100%; } .bubble { max-width: 100%; } .brand p { white-space: normal; } .chat-head { flex-direction: column; align-items: flex-start; } .status { text-align: left; } }
+
+    .mobile-actions { display: none; gap: 8px; }
+    .side-head-mobile { display: none; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--card); position: sticky; top: 0; z-index: 2; }
+    .side-head-mobile strong { font-size: 15px; }
+    .drawer-backdrop { display: none; position: fixed; inset: 0; z-index: 35; background: rgba(15,23,42,.34); backdrop-filter: blur(2px); }
+    body.mobile-side-open .drawer-backdrop { display: block; }
+    .mobile-toolbar-title { display: none; color: var(--muted); font-size: 13px; width: 100%; padding: 4px 2px 2px; }
+    @media (max-width: 980px) {
+      .app { min-height: 100dvh; grid-template-rows: auto minmax(0,1fr) auto; }
+      .header-inner { padding: 10px 12px; align-items: center; flex-direction: row; }
+      .brand { flex: 1; min-width: 0; }
+      .logo { width: 36px; height: 36px; border-radius: 12px; }
+      .brand h1 { font-size: 16px; }
+      .brand p { font-size: 12px; white-space: nowrap; }
+      .mobile-actions { display: flex; flex-shrink: 0; }
+      .mobile-actions button { padding: 8px 10px; border-radius: 11px; }
+      .toolbar { display: none; position: fixed; left: 8px; right: 8px; top: calc(58px + env(safe-area-inset-top)); z-index: 42; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 10px; max-height: min(65dvh, 420px); overflow: auto; justify-content: flex-start; }
+      body.mobile-menu-open .toolbar { display: flex; }
+      .mobile-toolbar-title { display: block; }
+      .toolbar button { flex: 1 1 calc(33.333% - 8px); min-width: 92px; }
+      .main { max-width: none; height: calc(100dvh - 148px - env(safe-area-inset-bottom)); min-height: 0; padding: 8px; display: block; overflow: hidden; }
+      .side { position: fixed; z-index: 40; top: 0; bottom: 0; left: 0; width: min(86vw, 360px); padding: max(10px, env(safe-area-inset-top)) 10px max(14px, env(safe-area-inset-bottom)); background: var(--bg); border-right: 1px solid var(--line); box-shadow: 16px 0 46px rgba(15,23,42,.20); overflow-y: auto; transform: translateX(-105%); transition: transform .22s ease; }
+      body.mobile-side-open .side { transform: translateX(0); }
+      .side-head-mobile { display: flex; margin: calc(-1 * max(10px, env(safe-area-inset-top))) -10px 10px; padding-top: max(12px, env(safe-area-inset-top)); }
+      .side .card { box-shadow: none; }
+      .chat-card { height: 100%; min-height: 0; border-radius: 16px; }
+      .chat-head { padding: 10px 12px; gap: 8px; }
+      .chat-head h2 { font-size: 16px; }
+      .chat-head p { font-size: 12px; }
+      .status { font-size: 12px; max-width: 46vw; }
+      .chat { height: 100%; min-height: 0; max-height: none; padding: 12px; }
+      .composer-wrap { padding: 8px 10px max(8px, env(safe-area-inset-bottom)); }
+      .composer { grid-template-columns: 1fr auto; gap: 8px; }
+      .input-shell { padding: 8px 10px; border-radius: 14px; }
+      textarea { min-height: 44px; max-height: 120px; }
+      .send-row { justify-content: flex-end; gap: 6px; }
+      .send-row button { padding: 9px 11px; }
+      .manage-grid { grid-template-columns: 1fr; }
+      .grid2,.grid3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .toolbar button { flex: 1 1 calc(50% - 8px); }
+      .bubble { max-width: 100%; }
+      .chat-head { flex-direction: row; align-items: flex-start; }
+      .status { text-align: right; max-width: 42vw; }
+      .brand p { max-width: 42vw; }
+      .composer { grid-template-columns: 1fr; }
+      .send-row { width: 100%; }
+      .send-row button { flex: 1; }
+      .main { height: calc(100dvh - 190px - env(safe-area-inset-bottom)); }
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <header class="header">
       <div class="header-inner">
-        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6.3</h1><p id="subtitle">角色库 · 世界书 · 记忆系统 · 回复调参 · 多窗口</p></div></div>
+        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6.4</h1><p id="subtitle">角色库 · 世界书 · 记忆系统 · 回复调参 · 多窗口</p></div></div>
+        <div class="mobile-actions">
+          <button id="mobileSideBtn" type="button">侧栏</button>
+          <button id="mobileMenuBtn" type="button">菜单</button>
+        </div>
         <div class="toolbar">
+          <div class="mobile-toolbar-title">工具菜单</div>
           <button id="themeToggleBtn" type="button">黑夜</button>
           <button id="newWindowBtn" type="button">新窗口</button>
           <button id="popWindowBtn" type="button">弹出当前</button>
@@ -129,9 +183,11 @@
         </div>
       </div>
     </header>
+    <div id="drawerBackdrop" class="drawer-backdrop"></div>
 
     <main class="main">
       <aside class="side">
+        <div class="side-head-mobile"><strong>窗口信息</strong><button id="closeMobileSideBtn" type="button">收起</button></div>
         <section class="card">
           <h2 id="sessionTitleSide">未命名窗口</h2>
           <p id="sessionDesc">当前窗口的角色、世界书、记忆与调参会一起参与生成。</p>
@@ -248,7 +304,7 @@
   <script>
     (() => {
       "use strict";
-      const APP_VERSION = "v6.3.0";
+      const APP_VERSION = "v6.4.0";
       const STORAGE = { settings: "lily_rp_v6_settings", sessions: "lily_rp_v6_sessions", characters: "lily_rp_v6_characters", lore: "lily_rp_v6_lore", lastSession: "lily_rp_v6_last_session" };
       const V5 = { settings: "lily_rp_v5_settings", sessions: "lily_rp_v5_sessions", migrated: "lily_rp_v6_migrated_v5" };
       const DEFAULTS = { workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat", appToken: "", model: "deepseek-v4-flash", temperature: 0.9, maxTokens: 2800, thinkingMode: false, fixedCore: true, theme: "light" };
@@ -268,7 +324,7 @@
       ].join("\n");
       const $ = (id) => document.getElementById(id);
       const els = {};
-      ["themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","loreHint","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","summarizeBtn","applySummaryToSceneBtn","appendSummaryToLongBtn","compressHistoryBtn","summaryDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
+      ["mobileMenuBtn","mobileSideBtn","closeMobileSideBtn","drawerBackdrop","themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","loreHint","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","summarizeBtn","applySummaryToSceneBtn","appendSummaryToLongBtn","compressHistoryBtn","summaryDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
 
       let settings = readObject(STORAGE.settings, DEFAULTS);
       let sessions = readArray(STORAGE.sessions);
@@ -351,6 +407,12 @@
       function selectedReasoning(m) { if (!m || m.role !== "assistant" || !Array.isArray(m.versions)) return ""; const i = Math.min(Math.max(Number(m.currentVersion || 0), 0), m.versions.length - 1); return m.versions[i]?.reasoning || ""; }
 
       function bindEvents() {
+        els.mobileMenuBtn.onclick = () => document.body.classList.toggle("mobile-menu-open");
+        els.mobileSideBtn.onclick = () => document.body.classList.add("mobile-side-open");
+        els.closeMobileSideBtn.onclick = () => document.body.classList.remove("mobile-side-open");
+        els.drawerBackdrop.onclick = () => { document.body.classList.remove("mobile-side-open"); document.body.classList.remove("mobile-menu-open"); };
+        els.toolbarCloseOnMobile = (e) => { if (window.matchMedia("(max-width: 980px)").matches && e.target.closest("button")) document.body.classList.remove("mobile-menu-open"); };
+        document.querySelector(".toolbar")?.addEventListener("click", els.toolbarCloseOnMobile);
         els.composer.addEventListener("submit", e => { e.preventDefault(); sendUser(); });
         els.userInput.addEventListener("input", () => { els.userInput.style.height = "auto"; els.userInput.style.height = Math.min(180, els.userInput.scrollHeight) + "px"; });
         els.continueBtn.onclick = () => continueStory(); els.regenLastBtn.onclick = () => regenerateLast();
