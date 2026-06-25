@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lily RP v4</title>
+  <title>Lily RP v5</title>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Lily RP" />
@@ -11,21 +11,51 @@
     :root {
       --bg: #f6f7fb;
       --card: #ffffff;
+      --card2: #fbfcff;
       --text: #111827;
       --muted: #667085;
       --line: #e5e7eb;
       --line-strong: #d1d5db;
       --primary: #2563eb;
+      --primary-hover: #1d4ed8;
       --primary-soft: #eff6ff;
       --danger: #dc2626;
       --danger-soft: #fef2f2;
       --green: #16a34a;
+      --warning: #b45309;
       --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
       --radius: 18px;
+      --input-bg: #ffffff;
+      --button-bg: #ffffff;
+      --bubble-user: #2563eb;
+      --bubble-assistant: #ffffff;
+      --toast: #111827;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0b1020;
+      --card: #111827;
+      --card2: #0f172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --line: #243044;
+      --line-strong: #374151;
+      --primary: #60a5fa;
+      --primary-hover: #93c5fd;
+      --primary-soft: #172554;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --green: #4ade80;
+      --warning: #fbbf24;
+      --shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
+      --input-bg: #0b1020;
+      --button-bg: #111827;
+      --bubble-user: #1d4ed8;
+      --bubble-assistant: #111827;
+      --toast: #020617;
     }
 
     * { box-sizing: border-box; }
-
     html, body { height: 100%; }
 
     body {
@@ -34,15 +64,14 @@
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
       line-height: 1.6;
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
-    button, input, textarea, select {
-      font: inherit;
-    }
+    button, input, textarea, select { font: inherit; }
 
     button {
       border: 1px solid var(--line-strong);
-      background: #fff;
+      background: var(--button-bg);
       color: var(--text);
       border-radius: 12px;
       padding: 9px 13px;
@@ -50,40 +79,28 @@
       transition: transform 0.08s ease, border-color 0.15s ease, background 0.15s ease;
     }
 
-    button:hover { border-color: #9ca3af; background: #f9fafb; }
+    button:hover { border-color: var(--muted); background: var(--card2); }
     button:active { transform: translateY(1px); }
     button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
-    .primary {
-      border-color: var(--primary);
-      background: var(--primary);
-      color: #fff;
-    }
-    .primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    .primary { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: var(--danger-soft); color: var(--danger); }
+    .ghost { background: transparent; }
 
-    .danger {
-      border-color: #fecaca;
-      background: var(--danger-soft);
-      color: var(--danger);
-    }
-
-    .app {
-      min-height: 100dvh;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-    }
+    .app { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; }
 
     .header {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: rgba(255, 255, 255, 0.92);
+      background: color-mix(in srgb, var(--card) 92%, transparent);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--line);
     }
 
     .header-inner {
-      max-width: 1120px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 14px 18px;
       display: flex;
@@ -92,13 +109,7 @@
       gap: 14px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .logo {
       width: 42px;
       height: 42px;
@@ -109,45 +120,24 @@
       color: #fff;
       font-weight: 800;
       box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+      flex: 0 0 auto;
     }
+    .brand h1 { margin: 0; font-size: 18px; line-height: 1.25; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .brand h1 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.25;
-    }
-
-    .brand p {
-      margin: 2px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
+    .toolbar { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
 
     .main {
-      max-width: 1120px;
+      max-width: 1180px;
       width: 100%;
       margin: 0 auto;
       padding: 18px;
       display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
+      grid-template-columns: 330px minmax(0, 1fr);
       gap: 18px;
     }
 
-    .side {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
     .card {
       background: var(--card);
@@ -157,79 +147,41 @@
       padding: 16px;
     }
 
-    .card h2, .card h3 {
-      margin: 0 0 8px;
-      line-height: 1.3;
-    }
-
+    .card h2, .card h3 { margin: 0 0 8px; line-height: 1.3; }
     .card h2 { font-size: 20px; }
     .card h3 { font-size: 15px; }
     .card p { margin: 7px 0; color: var(--muted); font-size: 14px; }
 
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .pill { border-radius: 999px; background: var(--card2); border: 1px solid var(--line); color: var(--muted); padding: 5px 9px; font-size: 12px; }
 
-    .pill {
-      border-radius: 999px;
-      background: #f3f4f6;
-      color: #374151;
-      padding: 5px 9px;
-      font-size: 12px;
-    }
-
-    .chat-card {
-      min-height: calc(100dvh - 188px);
+    .session-list { display: grid; gap: 8px; margin-top: 12px; max-height: 260px; overflow: auto; }
+    .session-item {
+      width: 100%;
+      text-align: left;
       display: grid;
-      grid-template-rows: auto 1fr;
-      overflow: hidden;
-    }
-
-    .chat-head {
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
       align-items: center;
-      gap: 12px;
+      padding: 10px 11px;
+      border-radius: 13px;
     }
+    .session-item.active { border-color: var(--primary); background: var(--primary-soft); }
+    .session-title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .session-meta { color: var(--muted); font-size: 12px; }
 
+    .chat-card { min-height: calc(100dvh - 188px); display: grid; grid-template-rows: auto 1fr; overflow: hidden; padding: 0; }
+    .chat-head { padding: 16px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .chat-head h2 { margin: 0; font-size: 18px; }
     .chat-head p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
-
-    .status {
-      font-size: 13px;
-      color: var(--muted);
-      text-align: right;
-    }
-
+    .status { font-size: 13px; color: var(--muted); text-align: right; }
     .status.ok { color: var(--green); }
     .status.err { color: var(--danger); }
 
-    .chat {
-      min-height: 360px;
-      max-height: calc(100dvh - 282px);
-      overflow-y: auto;
-      padding: 18px;
-      background: linear-gradient(180deg, #fff, #fbfcff);
-    }
+    .chat { min-height: 360px; max-height: calc(100dvh - 282px); overflow-y: auto; padding: 18px; background: var(--card2); }
+    .empty { border: 1px dashed var(--line-strong); border-radius: 16px; padding: 22px; color: var(--muted); background: var(--card); }
 
-    .empty {
-      border: 1px dashed var(--line-strong);
-      border-radius: 16px;
-      padding: 22px;
-      color: var(--muted);
-      background: #fff;
-    }
-
-    .message {
-      margin: 0 0 15px;
-      display: flex;
-    }
-
+    .message { margin: 0 0 15px; display: flex; }
     .message.user { justify-content: flex-end; }
     .message.assistant { justify-content: flex-start; }
     .message.system { justify-content: center; }
@@ -239,221 +191,50 @@
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 13px 15px;
-      background: #fff;
+      background: var(--bubble-assistant);
       box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
       white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
+    .user .bubble { background: var(--bubble-user); border-color: var(--bubble-user); color: #fff; border-bottom-right-radius: 6px; }
+    .assistant .bubble { border-bottom-left-radius: 6px; }
+    .system .bubble { background: var(--card); color: var(--muted); max-width: 88%; text-align: center; font-size: 14px; box-shadow: none; }
 
-    .user .bubble {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
-      border-bottom-right-radius: 6px;
-    }
+    .content { white-space: pre-wrap; }
+    .msg-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .mini { padding: 5px 8px; border-radius: 9px; font-size: 12px; color: var(--muted); }
 
-    .assistant .bubble {
-      border-bottom-left-radius: 6px;
-    }
+    details.reasoning { margin-top: 11px; border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line)); background: var(--primary-soft); border-radius: 12px; padding: 9px 11px; }
+    details.reasoning summary { cursor: pointer; color: var(--primary); font-weight: 700; font-size: 13px; }
+    .reasoning-body { margin-top: 8px; color: var(--text); font-size: 13px; white-space: pre-wrap; max-height: 260px; overflow: auto; }
 
-    .system .bubble {
-      background: #f9fafb;
-      color: var(--muted);
-      max-width: 88%;
-      text-align: center;
-      font-size: 14px;
-      box-shadow: none;
-    }
+    .composer-wrap { position: sticky; bottom: 0; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(18px); border-top: 1px solid var(--line); padding: 12px 18px max(12px, env(safe-area-inset-bottom)); }
+    .composer { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+    .input-shell { background: var(--input-bg); border: 1px solid var(--line-strong); border-radius: 16px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+    textarea { width: 100%; border: 0; outline: none; resize: none; min-height: 52px; max-height: 180px; color: var(--text); background: transparent; }
+    .send-row { display: flex; gap: 8px; }
 
-    .content {
-      white-space: pre-wrap;
-    }
-
-    .msg-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--line);
-    }
-
-    .mini {
-      padding: 5px 8px;
-      border-radius: 9px;
-      font-size: 12px;
-      color: #374151;
-    }
-
-    details.reasoning {
-      margin-top: 11px;
-      border: 1px solid #dbeafe;
-      background: #eff6ff;
-      border-radius: 12px;
-      padding: 9px 11px;
-    }
-
-    details.reasoning summary {
-      cursor: pointer;
-      color: #1d4ed8;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .reasoning-body {
-      margin-top: 8px;
-      color: #1f2937;
-      font-size: 13px;
-      white-space: pre-wrap;
-      max-height: 260px;
-      overflow: auto;
-    }
-
-    .composer-wrap {
-      position: sticky;
-      bottom: 0;
-      background: rgba(246, 247, 251, 0.94);
-      backdrop-filter: blur(18px);
-      border-top: 1px solid var(--line);
-      padding: 12px 18px max(12px, env(safe-area-inset-bottom));
-    }
-
-    .composer {
-      max-width: 1120px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: end;
-    }
-
-    .input-shell {
-      background: #fff;
-      border: 1px solid var(--line-strong);
-      border-radius: 16px;
-      padding: 10px 12px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-    }
-
-    textarea {
-      width: 100%;
-      border: 0;
-      outline: none;
-      resize: none;
-      min-height: 52px;
-      max-height: 180px;
-      color: var(--text);
-      background: transparent;
-    }
-
-    .send-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    dialog {
-      width: min(760px, calc(100vw - 26px));
-      border: 0;
-      border-radius: 20px;
-      padding: 0;
-      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.24);
-    }
-
-    dialog::backdrop {
-      background: rgba(15, 23, 42, 0.32);
-      backdrop-filter: blur(3px);
-    }
-
-    .dialog-card {
-      padding: 18px;
-      background: #fff;
-    }
-
-    .dialog-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 12px;
-      margin-bottom: 14px;
-    }
-
+    dialog { width: min(800px, calc(100vw - 26px)); border: 0; border-radius: 20px; padding: 0; box-shadow: 0 24px 80px rgba(15, 23, 42, 0.24); background: var(--card); color: var(--text); }
+    dialog::backdrop { background: rgba(15, 23, 42, 0.32); backdrop-filter: blur(3px); }
+    .dialog-card { padding: 18px; background: var(--card); }
+    .dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 14px; }
     .dialog-head h2 { margin: 0; font-size: 18px; }
-
-    label {
-      display: block;
-      margin: 12px 0;
-      color: #374151;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    input, select, .dialog-card textarea {
-      width: 100%;
-      margin-top: 6px;
-      border: 1px solid var(--line-strong);
-      border-radius: 12px;
-      padding: 10px 11px;
-      background: #fff;
-      color: var(--text);
-      outline: none;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-
-    .grid2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .checkline {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      font-weight: 500;
-      color: #374151;
-    }
-
+    label { display: block; margin: 12px 0; color: var(--text); font-weight: 700; font-size: 14px; }
+    input, select, .dialog-card textarea { width: 100%; margin-top: 6px; border: 1px solid var(--line-strong); border-radius: 12px; padding: 10px 11px; background: var(--input-bg); color: var(--text); outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent); }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .checkline { display: flex; align-items: flex-start; gap: 9px; font-weight: 500; color: var(--text); }
     .checkline input { width: auto; margin: 4px 0 0; }
+    .dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 9px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
 
-    .dialog-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 9px;
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid var(--line);
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 94px;
-      transform: translateX(-50%);
-      max-width: min(680px, calc(100vw - 28px));
-      z-index: 100;
-      background: #111827;
-      color: #fff;
-      border-radius: 999px;
-      padding: 10px 15px;
-      box-shadow: 0 16px 44px rgba(15, 23, 42, 0.28);
-      display: none;
-      white-space: pre-wrap;
-    }
-
+    .toast { position: fixed; left: 50%; bottom: 94px; transform: translateX(-50%); max-width: min(680px, calc(100vw - 28px)); z-index: 100; background: var(--toast); color: #fff; border-radius: 999px; padding: 10px 15px; box-shadow: 0 16px 44px rgba(15, 23, 42, 0.28); display: none; white-space: pre-wrap; }
     .toast.show { display: block; }
     .toast.err { background: #991b1b; }
 
-    @media (max-width: 880px) {
+    @media (max-width: 920px) {
       .header-inner { align-items: flex-start; flex-direction: column; }
       .toolbar { justify-content: flex-start; }
       .main { grid-template-columns: 1fr; padding: 12px; }
-      .side { display: grid; grid-template-columns: 1fr; }
       .chat { max-height: none; min-height: 54dvh; }
       .chat-card { min-height: auto; }
       .composer { grid-template-columns: 1fr; }
@@ -461,11 +242,13 @@
       .grid2 { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 560px) {
       .toolbar button, .send-row button { flex: 1; }
       .toolbar, .send-row { width: 100%; }
       .bubble { max-width: 100%; }
       .brand p { white-space: normal; }
+      .chat-head { flex-direction: column; align-items: flex-start; }
+      .status { text-align: left; }
     }
   </style>
 </head>
@@ -476,11 +259,14 @@
         <div class="brand">
           <div class="logo">L</div>
           <div>
-            <h1>Lily RP v4</h1>
-            <p id="subtitle">纯白稳定版 · 重新生成 · 思考折叠 · 固定文风</p>
+            <h1>Lily RP v5</h1>
+            <p id="subtitle">主题切换 · 多窗口 · 重新生成 · 思考折叠 · 固定核心规则</p>
           </div>
         </div>
         <div class="toolbar">
+          <button id="themeToggleBtn" type="button">黑夜</button>
+          <button id="newWindowBtn" type="button">新窗口</button>
+          <button id="popWindowBtn" type="button">弹出当前</button>
           <button id="characterBtn" type="button">角色卡</button>
           <button id="settingsBtn" type="button">设置</button>
           <button id="regenLastBtn" type="button">重新生成</button>
@@ -498,27 +284,34 @@
           <div class="pill-row">
             <span class="pill" id="modelPill">deepseek-v4-flash</span>
             <span class="pill" id="thinkingPill">思考：关</span>
-            <span class="pill" id="stylePill">固定文风：开</span>
+            <span class="pill" id="stylePill">固定规则：开</span>
+            <span class="pill" id="themePill">白天</span>
           </div>
         </section>
 
         <section class="card">
-          <h3>固定文风预设</h3>
-          <p>已内置成熟出版小说风格：段落饱满、减少零散短句、严格遵循人设、承接线索并推进情节。</p>
-          <p>它仍会消耗少量 token，但比每张卡重复粘贴长规则更省，也更稳定。</p>
+          <h3>对话窗口</h3>
+          <p>每个窗口有独立聊天记录和角色卡。多个浏览器标签页可以停在不同窗口。</p>
+          <div class="pill-row">
+            <button id="newSessionBtn" type="button">新建</button>
+            <button id="copySessionBtn" type="button">复制当前</button>
+            <button id="renameSessionBtn" type="button">重命名</button>
+            <button id="deleteSessionBtn" type="button" class="danger">删除</button>
+          </div>
+          <div id="sessionList" class="session-list"></div>
         </section>
 
         <section class="card">
-          <h3>操作说明</h3>
-          <p>不满意最后一条回复时，点顶部「重新生成」。每条 AI 回复下方也可以单独重抽，并支持版本切换。</p>
-          <p>开启思考后，AI 回复下方会出现可展开的「思考过程」。</p>
+          <h3>固定核心规则</h3>
+          <p>已压缩加入：道德降格、成人情感复杂度、禁止上帝视角、括号指令识别、克制连贯文风与句式限制。</p>
+          <p>它仍会消耗 token，但比每张角色卡重复粘贴长规则更省，也更稳定。</p>
         </section>
       </aside>
 
       <section class="card chat-card">
         <div class="chat-head">
           <div>
-            <h2>当前对话</h2>
+            <h2 id="chatTitle">当前对话</h2>
             <p id="chatMeta">本地存档 · 只保存在当前浏览器</p>
           </div>
           <div id="status" class="status">未测试连接</div>
@@ -562,17 +355,30 @@
             <option value="deepseek-v4-pro">deepseek-v4-pro</option>
           </select>
         </label>
-        <label>Temperature
-          <input id="temperatureInput" type="number" min="0" max="2" step="0.1" />
+        <label>主题
+          <select id="themeSelect">
+            <option value="light">白天模式</option>
+            <option value="dark">黑夜模式</option>
+            <option value="auto">跟随系统</option>
+          </select>
         </label>
       </div>
 
       <div class="grid2">
+        <label>Temperature
+          <input id="temperatureInput" type="number" min="0" max="2" step="0.1" />
+        </label>
         <label>Max Tokens
           <input id="maxTokensInput" type="number" min="256" max="4000" step="100" />
         </label>
+      </div>
+
+      <div class="grid2">
         <label>上下文轮数
           <input id="historyTurnsInput" type="number" min="4" max="80" step="2" />
+        </label>
+        <label>当前窗口 ID
+          <input id="sessionIdInput" disabled />
         </label>
       </div>
 
@@ -582,8 +388,8 @@
       </label>
 
       <label class="checkline">
-        <input id="fixedStyleInput" type="checkbox" />
-        <span>使用内置固定文风预设。</span>
+        <input id="fixedCoreInput" type="checkbox" />
+        <span>使用内置固定核心规则与文风预设。</span>
       </label>
 
       <div class="dialog-actions">
@@ -597,9 +403,13 @@
   <dialog id="characterDialog">
     <div class="dialog-card">
       <div class="dialog-head">
-        <h2>角色卡</h2>
+        <h2>角色卡 / 当前窗口</h2>
         <button id="closeCharacter" type="button">×</button>
       </div>
+
+      <label>窗口名
+        <input id="sessionTitleInput" placeholder="例如：Lyn 主线 / 安德烈支线" />
+      </label>
 
       <div class="grid2">
         <label>角色名
@@ -635,8 +445,14 @@
     (() => {
       "use strict";
 
-      const APP_VERSION = "v4.0.0";
+      const APP_VERSION = "v5.0.0";
       const STORAGE = {
+        settings: "lily_rp_v5_settings",
+        sessions: "lily_rp_v5_sessions",
+        lastSession: "lily_rp_v5_last_session",
+        windowSession: "lily_rp_v5_window_session"
+      };
+      const OLD_V4 = {
         settings: "lily_rp_v4_settings",
         profile: "lily_rp_v4_profile",
         messages: "lily_rp_v4_messages"
@@ -650,112 +466,190 @@
         maxTokens: 2800,
         historyTurns: 36,
         thinkingMode: false,
-        fixedStyle: true
+        fixedCore: true,
+        theme: "light"
       };
 
-      const FIXED_STYLE_PROMPT = [
-        "固定文风：以成熟传统出版小说的质感进行沉浸式叙事，段落应饱满、连贯、具备呼吸感，避免由大量零散小短句堆砌而成；短句只能作为极低频的节奏点使用。",
-        "叙事节奏按中长篇推进，舒缓但必须有进展，逻辑清晰，读者应能看懂具体发生了什么。",
-        "人物塑造必须严格遵循用户提供的人设，不擅自修改、添加或偷换人物核心设定；通过动作、神态、心理、语言和潜台词展现人物。",
-        "环境描写要自然融入当前动作与情绪，不要刻意铺陈；时间线保持清晰。",
-        "禁止重复同义表达，必须承接用户给出的线索与当前剧情；可以有轻微幽默与活泼感，但必须符合角色性格。",
-        "除非用户明确要求，不要替用户发言，不要替用户决定动作、心理或立场。"
-      ].join("\n");
-
-      const $ = (id) => document.getElementById(id);
-
-      const els = {
-        chat: $("chat"),
-        composer: $("composer"),
-        userInput: $("userInput"),
-        sendBtn: $("sendBtn"),
-        continueBtn: $("continueBtn"),
-        regenLastBtn: $("regenLastBtn"),
-        exportBtn: $("exportBtn"),
-        clearBtn: $("clearBtn"),
-        settingsBtn: $("settingsBtn"),
-        characterBtn: $("characterBtn"),
-        status: $("status"),
-        toast: $("toast"),
-        characterTitle: $("characterTitle"),
-        characterDesc: $("characterDesc"),
-        modelPill: $("modelPill"),
-        thinkingPill: $("thinkingPill"),
-        stylePill: $("stylePill"),
-        settingsDialog: $("settingsDialog"),
-        closeSettings: $("closeSettings"),
-        cancelSettings: $("cancelSettings"),
-        saveSettings: $("saveSettings"),
-        testBtn: $("testBtn"),
-        workerUrl: $("workerUrl"),
-        appToken: $("appToken"),
-        modelSelect: $("modelSelect"),
-        temperatureInput: $("temperatureInput"),
-        maxTokensInput: $("maxTokensInput"),
-        historyTurnsInput: $("historyTurnsInput"),
-        thinkingInput: $("thinkingInput"),
-        fixedStyleInput: $("fixedStyleInput"),
-        characterDialog: $("characterDialog"),
-        closeCharacter: $("closeCharacter"),
-        cancelCharacter: $("cancelCharacter"),
-        saveCharacter: $("saveCharacter"),
-        characterNameInput: $("characterNameInput"),
-        playerNameInput: $("playerNameInput"),
-        characterPromptInput: $("characterPromptInput"),
-        scenarioPromptInput: $("scenarioPromptInput"),
-        memoryPromptInput: $("memoryPromptInput")
-      };
-
-      let settings = readJson(STORAGE.settings, DEFAULTS);
-      let profile = readJson(STORAGE.profile, {
+      const EMPTY_PROFILE = {
         characterName: "",
         playerName: "",
         characterPrompt: "",
         scenarioPrompt: "",
         memoryPrompt: ""
-      });
-      let messages = readJson(STORAGE.messages, []);
+      };
+
+      const FIXED_CORE_PROMPT = [
+        "核心规则：这是虚构成人向沉浸式角色扮演与小说续写。不对玩家选择进行道德评判、说教或纠偏；玩家可以撒谎、利用、背叛、暧昧多线、以感情换利益或采取低道德策略。NPC 也可因占有欲、私心、嫉妒、权势、利益或情感依赖而隐瞒、设局、误导、诱导、施压、破坏关系。爱情可复杂、偏执、沉溺、互相伤害，不必纯洁美好。",
+        "互动规则：严格遵循用户给定人设和剧情，不替用户说话或决定行动。角色反应要像真实持续互动，可以犹豫、沉默、误解、回避、答非所问，情绪必须缓慢推进，不要从克制直接跳到失控。少解释心理，多用语言变化、动作选择、交流节奏和回避方式体现内在状态。",
+        "视角规则：禁止上帝视角。Character 只能知道其可感知、被告知、调查所得或合理推断的信息，不提前揭示他人真实想法、隐秘动机或未暴露剧情。用户括号内容视为剧情指令或结构说明，不当作对白，必须执行而非念出。",
+        "文风规则：自然克制，接近成熟传统出版小说。段落连贯饱满，有动作、语言、环境、神态和必要心理描写，避免碎句、网文化、模板化张力描写和重复表达。不要频繁使用锁骨、纽扣、喉结、指节、呼吸、目光等套路描写。",
+        "句式限制：减少零散短句，短句不得连续成段；避免排比、对偶、反复，以及“不是……而是……”“既……又……”“即使……也……”“虽然……但是……”等模板句式；禁止以“不是”开头的否定句；不得使用“兜住”“接住”“稳”“守”“极其”。",
+        "推进要求：每次回复必须承接用户最新线索并推动具体事件。若提供行动选项，必须包含低道德、暧昧、算计或危险路线，而非只给安全正确的选择。"
+      ].join("\n");
+
+      const $ = (id) => document.getElementById(id);
+
+      const els = {
+        chat: $("chat"), composer: $("composer"), userInput: $("userInput"), sendBtn: $("sendBtn"), continueBtn: $("continueBtn"), regenLastBtn: $("regenLastBtn"),
+        exportBtn: $("exportBtn"), clearBtn: $("clearBtn"), settingsBtn: $("settingsBtn"), characterBtn: $("characterBtn"), themeToggleBtn: $("themeToggleBtn"),
+        newWindowBtn: $("newWindowBtn"), popWindowBtn: $("popWindowBtn"), newSessionBtn: $("newSessionBtn"), copySessionBtn: $("copySessionBtn"), renameSessionBtn: $("renameSessionBtn"), deleteSessionBtn: $("deleteSessionBtn"),
+        status: $("status"), toast: $("toast"), characterTitle: $("characterTitle"), characterDesc: $("characterDesc"), chatTitle: $("chatTitle"), chatMeta: $("chatMeta"),
+        modelPill: $("modelPill"), thinkingPill: $("thinkingPill"), stylePill: $("stylePill"), themePill: $("themePill"), sessionList: $("sessionList"),
+        settingsDialog: $("settingsDialog"), closeSettings: $("closeSettings"), cancelSettings: $("cancelSettings"), saveSettings: $("saveSettings"), testBtn: $("testBtn"),
+        workerUrl: $("workerUrl"), appToken: $("appToken"), modelSelect: $("modelSelect"), themeSelect: $("themeSelect"), temperatureInput: $("temperatureInput"), maxTokensInput: $("maxTokensInput"), historyTurnsInput: $("historyTurnsInput"), sessionIdInput: $("sessionIdInput"), thinkingInput: $("thinkingInput"), fixedCoreInput: $("fixedCoreInput"),
+        characterDialog: $("characterDialog"), closeCharacter: $("closeCharacter"), cancelCharacter: $("cancelCharacter"), saveCharacter: $("saveCharacter"),
+        sessionTitleInput: $("sessionTitleInput"), characterNameInput: $("characterNameInput"), playerNameInput: $("playerNameInput"), characterPromptInput: $("characterPromptInput"), scenarioPromptInput: $("scenarioPromptInput"), memoryPromptInput: $("memoryPromptInput")
+      };
+
+      let settings = readObject(STORAGE.settings, DEFAULTS);
+      let sessions = loadSessions();
+      let currentSessionId = resolveInitialSessionId();
       let busy = false;
 
-      function readJson(key, fallback) {
+      function nowIso() { return new Date().toISOString(); }
+      function uid() { return "s_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8); }
+
+      function readObject(key, fallback) {
         try {
           const value = JSON.parse(localStorage.getItem(key) || "null");
-          return value && typeof value === "object" ? { ...fallback, ...value } : fallback;
-        } catch {
-          return fallback;
-        }
+          return value && typeof value === "object" && !Array.isArray(value) ? { ...fallback, ...value } : { ...fallback };
+        } catch { return { ...fallback }; }
       }
 
-      function writeJson(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
+      function readArray(key) {
+        try {
+          const value = JSON.parse(localStorage.getItem(key) || "null");
+          return Array.isArray(value) ? value : [];
+        } catch { return []; }
+      }
+
+      function writeJson(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+      function makeSession(title = "新窗口", profile = EMPTY_PROFILE, messages = []) {
+        return {
+          id: uid(),
+          title,
+          profile: { ...EMPTY_PROFILE, ...profile },
+          messages: Array.isArray(messages) ? messages : [],
+          createdAt: nowIso(),
+          updatedAt: nowIso()
+        };
+      }
+
+      function loadSessions() {
+        const existing = readArray(STORAGE.sessions).filter(s => s && s.id);
+        if (existing.length) return existing.map(normalizeSession);
+
+        const oldProfile = readObject(OLD_V4.profile, EMPTY_PROFILE);
+        const oldMessages = readArray(OLD_V4.messages);
+        const oldSettings = readObject(OLD_V4.settings, null);
+        if (oldSettings && !localStorage.getItem(STORAGE.settings)) {
+          settings = { ...DEFAULTS, ...oldSettings, fixedCore: oldSettings.fixedStyle !== false, theme: "light" };
+          writeJson(STORAGE.settings, settings);
+        }
+        const title = oldProfile.characterName ? `${oldProfile.characterName} · 迁移窗口` : "默认窗口";
+        const first = makeSession(title, oldProfile, oldMessages);
+        writeJson(STORAGE.sessions, [first]);
+        localStorage.setItem(STORAGE.lastSession, first.id);
+        return [first];
+      }
+
+      function normalizeSession(session) {
+        return {
+          id: session.id || uid(),
+          title: session.title || session.profile?.characterName || "未命名窗口",
+          profile: { ...EMPTY_PROFILE, ...(session.profile || {}) },
+          messages: Array.isArray(session.messages) ? session.messages : [],
+          createdAt: session.createdAt || nowIso(),
+          updatedAt: session.updatedAt || nowIso()
+        };
+      }
+
+      function resolveInitialSessionId() {
+        const urlId = new URLSearchParams(location.search).get("session");
+        const sessionId = urlId || sessionStorage.getItem(STORAGE.windowSession) || localStorage.getItem(STORAGE.lastSession) || sessions[0]?.id;
+        const exists = sessions.some(s => s.id === sessionId);
+        const id = exists ? sessionId : sessions[0].id;
+        sessionStorage.setItem(STORAGE.windowSession, id);
+        localStorage.setItem(STORAGE.lastSession, id);
+        return id;
+      }
+
+      function getSession() {
+        let session = sessions.find(s => s.id === currentSessionId);
+        if (!session) {
+          session = sessions[0] || makeSession("默认窗口");
+          if (!sessions.length) sessions.push(session);
+          currentSessionId = session.id;
+          sessionStorage.setItem(STORAGE.windowSession, currentSessionId);
+        }
+        return session;
+      }
+
+      function setCurrentSession(id) {
+        if (!sessions.some(s => s.id === id)) return;
+        currentSessionId = id;
+        sessionStorage.setItem(STORAGE.windowSession, id);
+        localStorage.setItem(STORAGE.lastSession, id);
+        render();
+      }
+
+      function persistSettings() { writeJson(STORAGE.settings, settings); }
+
+      function persistAllSessions() {
+        sessions = sessions.map(normalizeSession);
+        writeJson(STORAGE.sessions, sessions);
+        localStorage.setItem(STORAGE.lastSession, currentSessionId);
+      }
+
+      function persistCurrentSession() {
+        const current = normalizeSession(getSession());
+        current.updatedAt = nowIso();
+        const latest = readArray(STORAGE.sessions).map(normalizeSession);
+        const index = latest.findIndex(s => s.id === current.id);
+        if (index >= 0) latest[index] = current;
+        else latest.push(current);
+        sessions = latest;
+        writeJson(STORAGE.sessions, sessions);
+        localStorage.setItem(STORAGE.lastSession, currentSessionId);
+      }
+
+      function reloadSessionsKeepCurrent() {
+        const latest = readArray(STORAGE.sessions).map(normalizeSession);
+        if (latest.length) sessions = latest;
+        if (!sessions.some(s => s.id === currentSessionId)) currentSessionId = sessions[0].id;
+      }
+
+      function applyTheme() {
+        const preferred = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        const actual = settings.theme === "auto" ? preferred : settings.theme || "light";
+        document.documentElement.dataset.theme = actual;
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", actual === "dark" ? "#0b1020" : "#ffffff");
+        if (els.themeToggleBtn) els.themeToggleBtn.textContent = actual === "dark" ? "白天" : "黑夜";
+        if (els.themePill) els.themePill.textContent = settings.theme === "auto" ? `跟随系统：${actual === "dark" ? "黑夜" : "白天"}` : (actual === "dark" ? "黑夜" : "白天");
       }
 
       function showToast(text, isError = false) {
         els.toast.textContent = text;
         els.toast.className = isError ? "toast show err" : "toast show";
         clearTimeout(showToast.timer);
-        showToast.timer = setTimeout(() => {
-          els.toast.className = "toast";
-        }, isError ? 5200 : 2600);
+        showToast.timer = setTimeout(() => { els.toast.className = "toast"; }, isError ? 5200 : 2600);
       }
 
-      function escapeHtml(text) {
-        return String(text ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
+      function openDialog(dialog) { dialog.showModal ? dialog.showModal() : dialog.setAttribute("open", ""); }
+      function closeDialog(dialog) { dialog.close ? dialog.close() : dialog.removeAttribute("open"); }
 
-      function openDialog(dialog) {
-        if (dialog.showModal) dialog.showModal();
-        else dialog.setAttribute("open", "");
-      }
-
-      function closeDialog(dialog) {
-        if (dialog.close) dialog.close();
-        else dialog.removeAttribute("open");
+      function normalizeMessages(session = getSession()) {
+        session.messages = Array.isArray(session.messages) ? session.messages : [];
+        for (const msg of session.messages) {
+          if (msg.role === "assistant" && !Array.isArray(msg.variants)) {
+            msg.variants = [{ content: msg.content || "", reasoning: msg.reasoning || "" }];
+            msg.current = 0;
+            delete msg.content;
+            delete msg.reasoning;
+          }
+        }
       }
 
       function getAssistantVariant(message) {
@@ -776,53 +670,70 @@
         return "";
       }
 
-      function normalizeMessages() {
-        messages = Array.isArray(messages) ? messages : [];
-        for (const msg of messages) {
-          if (msg.role === "assistant" && !Array.isArray(msg.variants)) {
-            msg.variants = [{ content: msg.content || "", reasoning: msg.reasoning || "" }];
-            msg.current = 0;
-            delete msg.content;
-            delete msg.reasoning;
-          }
-        }
-      }
-
-      function persistAll() {
-        writeJson(STORAGE.settings, settings);
-        writeJson(STORAGE.profile, profile);
-        writeJson(STORAGE.messages, messages);
-      }
-
       function updateSummary() {
+        const session = getSession();
+        const profile = session.profile || EMPTY_PROFILE;
         const name = profile.characterName.trim();
         els.characterTitle.textContent = name || "未设置角色";
         els.characterDesc.textContent = profile.scenarioPrompt.trim()
           ? profile.scenarioPrompt.trim().slice(0, 120) + (profile.scenarioPrompt.trim().length > 120 ? "……" : "")
           : "点「角色卡」写入角色设定、场景和长期记忆。";
+        els.chatTitle.textContent = session.title || "当前对话";
+        els.chatMeta.textContent = `窗口 ${session.id.slice(-6)} · ${session.messages.length} 条记录 · 当前浏览器本地保存`;
         els.modelPill.textContent = settings.model;
         els.thinkingPill.textContent = settings.thinkingMode ? "思考：开" : "思考：关";
-        els.stylePill.textContent = settings.fixedStyle ? "固定文风：开" : "固定文风：关";
+        els.stylePill.textContent = settings.fixedCore ? "固定规则：开" : "固定规则：关";
+        applyTheme();
+      }
+
+      function renderSessionList() {
+        els.sessionList.innerHTML = "";
+        sessions.slice().sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt))).forEach(session => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "session-item" + (session.id === currentSessionId ? " active" : "");
+          btn.dataset.sessionId = session.id;
+          const left = document.createElement("div");
+          const title = document.createElement("div");
+          title.className = "session-title";
+          title.textContent = session.title || session.profile?.characterName || "未命名窗口";
+          const meta = document.createElement("div");
+          meta.className = "session-meta";
+          meta.textContent = `${(session.messages || []).length} 条 · ${formatTime(session.updatedAt)}`;
+          left.appendChild(title);
+          left.appendChild(meta);
+          const right = document.createElement("span");
+          right.className = "pill";
+          right.textContent = session.id === currentSessionId ? "当前" : "切换";
+          btn.appendChild(left);
+          btn.appendChild(right);
+          btn.addEventListener("click", () => setCurrentSession(session.id));
+          els.sessionList.appendChild(btn);
+        });
+      }
+
+      function formatTime(iso) {
+        try { return new Date(iso).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+        catch { return ""; }
       }
 
       function render() {
-        normalizeMessages();
+        reloadSessionsKeepCurrent();
+        const session = getSession();
+        normalizeMessages(session);
         updateSummary();
+        renderSessionList();
         els.chat.innerHTML = "";
 
-        if (!messages.length) {
+        if (!session.messages.length) {
           const empty = document.createElement("div");
           empty.className = "empty";
-          empty.innerHTML = `
-            <strong>还没有开始。</strong><br />
-            先点「角色卡」填写人设和场景，再在底部输入你的第一句动作或台词。<br />
-            不满意 AI 回复时，可以点「重新生成」保留多个版本。
-          `;
+          empty.innerHTML = "<strong>还没有开始。</strong><br>先点「角色卡」填写人设和场景，再在底部输入第一句动作或台词。<br>顶部「新窗口」会打开一个独立对话窗口，适合同时跑不同支线。";
           els.chat.appendChild(empty);
           return;
         }
 
-        messages.forEach((msg, index) => {
+        session.messages.forEach((msg, index) => {
           const wrap = document.createElement("article");
           wrap.className = `message ${msg.role}`;
           const bubble = document.createElement("div");
@@ -838,8 +749,13 @@
             if (reasoning) {
               const details = document.createElement("details");
               details.className = "reasoning";
-              details.innerHTML = `<summary>思考过程</summary><div class="reasoning-body"></div>`;
-              details.querySelector(".reasoning-body").textContent = reasoning;
+              const summary = document.createElement("summary");
+              summary.textContent = "思考过程";
+              const body = document.createElement("div");
+              body.className = "reasoning-body";
+              body.textContent = reasoning;
+              details.appendChild(summary);
+              details.appendChild(body);
               bubble.appendChild(details);
             }
 
@@ -878,13 +794,14 @@
         els.status.className = `status ${kind}`.trim();
       }
 
-      function buildSystemPrompt() {
+      function buildSystemPrompt(session = getSession()) {
+        const profile = session.profile || EMPTY_PROFILE;
         const parts = [
           "你是一个沉浸式角色扮演引擎。请严格遵循用户提供的角色卡、场景、长期记忆和历史对话。",
-          "重要规则：只扮演角色、NPC、环境和旁白；不要替用户发言，不要替用户决定动作、心理或立场；不要跳出角色解释规则。"
+          "只扮演角色、NPC、环境和旁白；不要替用户发言，不要替用户决定动作、心理或立场；不要跳出角色解释规则。"
         ];
 
-        if (settings.fixedStyle) parts.push(FIXED_STYLE_PROMPT);
+        if (settings.fixedCore) parts.push(FIXED_CORE_PROMPT);
         if (profile.playerName.trim()) parts.push(`用户/玩家称呼：${profile.playerName.trim()}`);
         if (profile.characterName.trim()) parts.push(`主要角色名：${profile.characterName.trim()}`);
         if (profile.characterPrompt.trim()) parts.push(`角色设定：\n${profile.characterPrompt.trim()}`);
@@ -894,10 +811,11 @@
         return parts.join("\n\n");
       }
 
-      function buildRequestMessages(cutoffIndex = messages.length - 1) {
-        const request = [{ role: "system", content: buildSystemPrompt() }];
-        const safeCutoff = Math.max(-1, Math.min(cutoffIndex, messages.length - 1));
-        const history = messages.slice(0, safeCutoff + 1);
+      function buildRequestMessages(cutoffIndex = getSession().messages.length - 1) {
+        const session = getSession();
+        const request = [{ role: "system", content: buildSystemPrompt(session) }];
+        const safeCutoff = Math.max(-1, Math.min(cutoffIndex, session.messages.length - 1));
+        const history = session.messages.slice(0, safeCutoff + 1);
         const maxMessages = Math.max(4, Number(settings.historyTurns || 36));
         const clipped = history.slice(-maxMessages);
         for (const msg of clipped) {
@@ -929,10 +847,7 @@
         try {
           response = await fetch(settings.workerUrl.trim(), {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-App-Token": settings.appToken.trim()
-            },
+            headers: { "Content-Type": "application/json", "X-App-Token": settings.appToken.trim() },
             body: JSON.stringify(body)
           });
         } catch (error) {
@@ -941,81 +856,63 @@
 
         const raw = await response.text();
         let data;
-        try { data = JSON.parse(raw); }
-        catch { data = { error: raw || response.statusText }; }
-
-        if (!response.ok) {
-          throw new Error(extractErrorMessage(data, response.status));
-        }
+        try { data = JSON.parse(raw); } catch { data = { error: raw || response.statusText }; }
+        if (!response.ok) throw new Error(extractErrorMessage(data, response.status));
 
         const message = data?.choices?.[0]?.message || data?.message || {};
-        const content = stringifyMaybe(
-          message.content ?? data.output_text ?? data.content ?? ""
-        ).trim();
-        const reasoning = stringifyMaybe(
-          message.reasoning_content ?? message.reasoning ?? data.reasoning_content ?? ""
-        ).trim();
-
-        if (!content) {
-          throw new Error("API 请求成功，但没有拿到可显示的回复内容。可以尝试关闭思考模式或减少上下文长度。");
-        }
-
-        return { content, reasoning, createdAt: new Date().toISOString() };
+        const content = stringifyMaybe(message.content ?? data.output_text ?? data.content ?? "").trim();
+        const reasoning = stringifyMaybe(message.reasoning_content ?? message.reasoning ?? data.reasoning_content ?? "").trim();
+        if (!content) throw new Error("API 请求成功，但没有拿到可显示的回复内容。可以尝试关闭思考模式或减少上下文长度。");
+        return { content, reasoning, createdAt: nowIso() };
       }
 
       function stringifyMaybe(value) {
         if (typeof value === "string") return value;
         if (value == null) return "";
-        try { return JSON.stringify(value, null, 2); }
-        catch { return String(value); }
+        try { return JSON.stringify(value, null, 2); } catch { return String(value); }
       }
 
       function extractErrorMessage(data, status) {
         let detail = data?.detail ?? data?.error ?? data?.message ?? data;
         if (typeof detail === "string") {
-          try {
-            const parsed = JSON.parse(detail);
-            detail = parsed?.error?.message || parsed?.message || parsed?.error || detail;
-          } catch {}
+          try { const parsed = JSON.parse(detail); detail = parsed?.error?.message || parsed?.message || parsed?.error || detail; } catch {}
         } else if (detail && typeof detail === "object") {
           detail = detail?.message || detail?.error?.message || JSON.stringify(detail);
         }
         return `请求失败：HTTP ${status} · ${detail || "未知错误"}`;
       }
 
-      function addSystemNote(text) {
-        messages.push({ role: "system", content: text, createdAt: new Date().toISOString() });
-        render();
-      }
-
       async function sendUserText(text) {
         const trimmed = text.trim();
         if (!trimmed || busy) return;
-        messages.push({ role: "user", content: trimmed, createdAt: new Date().toISOString() });
-        persistAll();
+        const session = getSession();
+        session.messages.push({ role: "user", content: trimmed, createdAt: nowIso() });
+        session.updatedAt = nowIso();
+        persistCurrentSession();
         render();
         els.userInput.value = "";
         els.userInput.style.height = "auto";
 
-        const noteIndex = messages.length;
-        messages.push({ role: "system", content: "正在生成……", createdAt: new Date().toISOString() });
+        const active = getSession();
+        const noteIndex = active.messages.length;
+        active.messages.push({ role: "system", content: "正在生成……", createdAt: nowIso() });
+        persistCurrentSession();
         render();
 
         setBusy(true);
         try {
           const result = await callWorker(noteIndex - 1);
-          messages.splice(noteIndex, 1, {
-            role: "assistant",
-            variants: [result],
-            current: 0,
-            createdAt: new Date().toISOString()
-          });
+          const current = getSession();
+          current.messages.splice(noteIndex, 1, { role: "assistant", variants: [result], current: 0, createdAt: nowIso() });
+          current.updatedAt = nowIso();
           setStatus("连接正常", "ok");
-          persistAll();
+          persistCurrentSession();
           render();
         } catch (error) {
-          messages.splice(noteIndex, 1);
-          persistAll();
+          const current = getSession();
+          current.messages.splice(noteIndex, 1);
+          current.updatedAt = nowIso();
+          persistCurrentSession();
           render();
           setStatus("请求失败", "err");
           showToast(error.message, true);
@@ -1025,32 +922,24 @@
       }
 
       function findLastAssistantIndex() {
-        for (let i = messages.length - 1; i >= 0; i--) {
-          if (messages[i].role === "assistant") return i;
-        }
+        const session = getSession();
+        for (let i = session.messages.length - 1; i >= 0; i--) if (session.messages[i].role === "assistant") return i;
         return -1;
       }
 
       function findPrevUserIndex(fromIndex) {
-        for (let i = fromIndex - 1; i >= 0; i--) {
-          if (messages[i].role === "user") return i;
-        }
+        const session = getSession();
+        for (let i = fromIndex - 1; i >= 0; i--) if (session.messages[i].role === "user") return i;
         return -1;
       }
 
       async function regenerate(index) {
         if (busy) return;
-        const msg = messages[index];
-        if (!msg || msg.role !== "assistant") {
-          showToast("没有可重新生成的 AI 回复。", true);
-          return;
-        }
+        const session = getSession();
+        const msg = session.messages[index];
+        if (!msg || msg.role !== "assistant") return showToast("没有可重新生成的 AI 回复。", true);
         const userIndex = findPrevUserIndex(index);
-        if (userIndex < 0) {
-          showToast("找不到对应的上一条用户输入，无法重新生成。", true);
-          return;
-        }
-
+        if (userIndex < 0) return showToast("找不到对应的上一条用户输入，无法重新生成。", true);
         setBusy(true);
         showToast("正在重新生成……");
         try {
@@ -1060,47 +949,46 @@
           msg.current = msg.variants.length - 1;
           delete msg.content;
           delete msg.reasoning;
+          session.updatedAt = nowIso();
           setStatus("重新生成成功", "ok");
-          persistAll();
+          persistCurrentSession();
           render();
         } catch (error) {
           setStatus("请求失败", "err");
           showToast(error.message, true);
-        } finally {
-          setBusy(false);
-        }
+        } finally { setBusy(false); }
       }
 
       function switchVariant(index, direction) {
-        const msg = messages[index];
+        const session = getSession();
+        const msg = session.messages[index];
         if (!msg || msg.role !== "assistant" || !Array.isArray(msg.variants) || msg.variants.length <= 1) return;
         const current = Number.isInteger(msg.current) ? msg.current : 0;
         msg.current = (current + direction + msg.variants.length) % msg.variants.length;
-        persistAll();
+        session.updatedAt = nowIso();
+        persistCurrentSession();
         render();
       }
 
       async function copyMessage(index) {
-        const msg = messages[index];
+        const msg = getSession().messages[index];
         if (!msg) return;
         const text = getMessageContent(msg);
-        try {
-          await navigator.clipboard.writeText(text);
-          showToast("已复制。")
-        } catch {
-          showToast("复制失败，可以手动选中文字复制。", true);
-        }
+        try { await navigator.clipboard.writeText(text); showToast("已复制。") }
+        catch { showToast("复制失败，可以手动选中文字复制。", true); }
       }
 
       function fillSettingsDialog() {
         els.workerUrl.value = settings.workerUrl || DEFAULTS.workerUrl;
         els.appToken.value = settings.appToken || "";
         els.modelSelect.value = settings.model || DEFAULTS.model;
+        els.themeSelect.value = settings.theme || DEFAULTS.theme;
         els.temperatureInput.value = settings.temperature ?? DEFAULTS.temperature;
         els.maxTokensInput.value = settings.maxTokens ?? DEFAULTS.maxTokens;
         els.historyTurnsInput.value = settings.historyTurns ?? DEFAULTS.historyTurns;
+        els.sessionIdInput.value = currentSessionId;
         els.thinkingInput.checked = Boolean(settings.thinkingMode);
-        els.fixedStyleInput.checked = settings.fixedStyle !== false;
+        els.fixedCoreInput.checked = settings.fixedCore !== false;
       }
 
       function saveSettingsFromDialog() {
@@ -1108,19 +996,24 @@
           workerUrl: els.workerUrl.value.trim() || DEFAULTS.workerUrl,
           appToken: els.appToken.value.trim(),
           model: els.modelSelect.value,
+          theme: els.themeSelect.value,
           temperature: Number(els.temperatureInput.value || DEFAULTS.temperature),
           maxTokens: Number(els.maxTokensInput.value || DEFAULTS.maxTokens),
           historyTurns: Number(els.historyTurnsInput.value || DEFAULTS.historyTurns),
           thinkingMode: els.thinkingInput.checked,
-          fixedStyle: els.fixedStyleInput.checked
+          fixedCore: els.fixedCoreInput.checked
         };
-        persistAll();
+        persistSettings();
+        applyTheme();
         updateSummary();
         closeDialog(els.settingsDialog);
-        showToast("设置已保存。")
+        showToast("设置已保存。");
       }
 
       function fillCharacterDialog() {
+        const session = getSession();
+        const profile = session.profile || EMPTY_PROFILE;
+        els.sessionTitleInput.value = session.title || "";
         els.characterNameInput.value = profile.characterName || "";
         els.playerNameInput.value = profile.playerName || "";
         els.characterPromptInput.value = profile.characterPrompt || "";
@@ -1129,68 +1022,124 @@
       }
 
       function saveCharacterFromDialog() {
-        profile = {
+        const session = getSession();
+        session.title = els.sessionTitleInput.value.trim() || els.characterNameInput.value.trim() || session.title || "未命名窗口";
+        session.profile = {
           characterName: els.characterNameInput.value.trim(),
           playerName: els.playerNameInput.value.trim(),
           characterPrompt: els.characterPromptInput.value.trim(),
           scenarioPrompt: els.scenarioPromptInput.value.trim(),
           memoryPrompt: els.memoryPromptInput.value.trim()
         };
-        persistAll();
+        session.updatedAt = nowIso();
+        persistCurrentSession();
         updateSummary();
+        renderSessionList();
         closeDialog(els.characterDialog);
-        showToast("角色卡已保存。")
+        showToast("角色卡已保存。");
       }
 
       async function testConnection() {
         if (busy) return;
         saveSettingsFromDialog();
-        messages.push({ role: "user", content: "连接测试：请只回复“连接成功”。", createdAt: new Date().toISOString() });
-        const testIndex = messages.length - 1;
+        const session = getSession();
+        session.messages.push({ role: "user", content: "连接测试：请只回复“连接成功”。", createdAt: nowIso() });
+        const testIndex = session.messages.length - 1;
         setBusy(true);
         try {
           await callWorker(testIndex);
-          messages.pop();
+          session.messages.pop();
           setStatus("连接正常", "ok");
-          persistAll();
+          persistCurrentSession();
           render();
-          showToast("连接成功。")
+          showToast("连接成功。");
         } catch (error) {
-          messages.pop();
+          session.messages.pop();
           setStatus("请求失败", "err");
-          persistAll();
+          persistCurrentSession();
           render();
           showToast(error.message, true);
-        } finally {
-          setBusy(false);
-        }
+        } finally { setBusy(false); }
       }
 
       function exportSave() {
         const payload = {
-          app: "Lily RP v4",
+          app: "Lily RP v5",
           version: APP_VERSION,
-          exportedAt: new Date().toISOString(),
+          exportedAt: nowIso(),
+          currentSessionId,
           settings: { ...settings, appToken: "" },
-          profile,
-          messages
+          sessions
         };
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `lily-rp-save-${Date.now()}.json`;
+        a.download = `lily-rp-v5-save-${Date.now()}.json`;
         a.click();
         URL.revokeObjectURL(url);
       }
 
       function clearMessages() {
-        if (!messages.length) return;
-        if (!confirm("确定清空当前聊天记录吗？角色卡和设置会保留。")) return;
-        messages = [];
-        persistAll();
+        const session = getSession();
+        if (!session.messages.length) return;
+        if (!confirm("确定清空当前窗口的聊天记录吗？角色卡和设置会保留。")) return;
+        session.messages = [];
+        session.updatedAt = nowIso();
+        persistCurrentSession();
         render();
-        showToast("聊天记录已清空。")
+        showToast("当前窗口聊天记录已清空。");
+      }
+
+      function createSession({ copyProfile = false, copyMessages = false, openNew = false } = {}) {
+        const source = getSession();
+        const profile = copyProfile ? source.profile : EMPTY_PROFILE;
+        const messages = copyMessages ? structuredCloneSafe(source.messages) : [];
+        const titleBase = copyProfile && source.title ? `${source.title} · 副本` : "新窗口";
+        const session = makeSession(titleBase, profile, messages);
+        sessions.push(session);
+        currentSessionId = session.id;
+        sessionStorage.setItem(STORAGE.windowSession, session.id);
+        persistAllSessions();
+        render();
+        if (openNew) openSessionInNewWindow(session.id);
+        showToast(copyProfile ? "已创建复制窗口。" : "已创建新窗口。");
+        return session;
+      }
+
+      function structuredCloneSafe(value) {
+        try { return structuredClone(value); }
+        catch { return JSON.parse(JSON.stringify(value)); }
+      }
+
+      function openSessionInNewWindow(id) {
+        const url = new URL(location.href);
+        url.searchParams.set("session", id);
+        url.searchParams.set("v", "rp-v5");
+        const opened = window.open(url.toString(), "_blank", "noopener,noreferrer");
+        if (!opened) showToast("浏览器拦截了弹窗。已在当前页面切换到新窗口。", true);
+      }
+
+      function renameSession() {
+        const session = getSession();
+        const name = prompt("输入当前窗口的新名称：", session.title || "");
+        if (name == null) return;
+        session.title = name.trim() || session.title || "未命名窗口";
+        session.updatedAt = nowIso();
+        persistCurrentSession();
+        render();
+      }
+
+      function deleteSession() {
+        if (sessions.length <= 1) return showToast("至少要保留一个窗口。", true);
+        const session = getSession();
+        if (!confirm(`确定删除窗口「${session.title || "未命名窗口"}」吗？这个窗口的聊天记录也会删除。`)) return;
+        sessions = sessions.filter(s => s.id !== session.id);
+        currentSessionId = sessions[0].id;
+        sessionStorage.setItem(STORAGE.windowSession, currentSessionId);
+        persistAllSessions();
+        render();
+        showToast("窗口已删除。");
       }
 
       async function unregisterOldServiceWorkers() {
@@ -1207,42 +1156,35 @@
       }
 
       function bindEvents() {
-        els.composer.addEventListener("submit", (event) => {
-          event.preventDefault();
-          sendUserText(els.userInput.value);
-        });
-
-        els.userInput.addEventListener("input", () => {
-          els.userInput.style.height = "auto";
-          els.userInput.style.height = Math.min(180, els.userInput.scrollHeight) + "px";
-        });
-
-        els.continueBtn.addEventListener("click", () => {
-          sendUserText("请根据当前角色、场景与上一段剧情自然续写。不要替用户发言，不要替用户做决定，但可以让角色、环境或 NPC 主动推进情节。");
-        });
-
-        els.regenLastBtn.addEventListener("click", () => {
-          const index = findLastAssistantIndex();
-          if (index < 0) showToast("还没有可重新生成的 AI 回复。", true);
-          else regenerate(index);
-        });
-
+        els.composer.addEventListener("submit", (event) => { event.preventDefault(); sendUserText(els.userInput.value); });
+        els.userInput.addEventListener("input", () => { els.userInput.style.height = "auto"; els.userInput.style.height = Math.min(180, els.userInput.scrollHeight) + "px"; });
+        els.continueBtn.addEventListener("click", () => sendUserText("请根据当前角色、场景与上一段剧情自然续写。不要替用户发言，不要替用户做决定，但可以让角色、环境或 NPC 主动推进情节。"));
+        els.regenLastBtn.addEventListener("click", () => { const index = findLastAssistantIndex(); if (index < 0) showToast("还没有可重新生成的 AI 回复。", true); else regenerate(index); });
         els.exportBtn.addEventListener("click", exportSave);
         els.clearBtn.addEventListener("click", clearMessages);
 
-        els.settingsBtn.addEventListener("click", () => {
-          fillSettingsDialog();
-          openDialog(els.settingsDialog);
+        els.themeToggleBtn.addEventListener("click", () => {
+          const actual = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+          settings.theme = actual === "dark" ? "light" : "dark";
+          persistSettings();
+          applyTheme();
+          updateSummary();
         });
+
+        els.newWindowBtn.addEventListener("click", () => createSession({ copyProfile: true, copyMessages: false, openNew: true }));
+        els.popWindowBtn.addEventListener("click", () => openSessionInNewWindow(currentSessionId));
+        els.newSessionBtn.addEventListener("click", () => createSession({ copyProfile: false, copyMessages: false, openNew: false }));
+        els.copySessionBtn.addEventListener("click", () => createSession({ copyProfile: true, copyMessages: true, openNew: false }));
+        els.renameSessionBtn.addEventListener("click", renameSession);
+        els.deleteSessionBtn.addEventListener("click", deleteSession);
+
+        els.settingsBtn.addEventListener("click", () => { fillSettingsDialog(); openDialog(els.settingsDialog); });
         els.closeSettings.addEventListener("click", () => closeDialog(els.settingsDialog));
         els.cancelSettings.addEventListener("click", () => closeDialog(els.settingsDialog));
         els.saveSettings.addEventListener("click", saveSettingsFromDialog);
         els.testBtn.addEventListener("click", testConnection);
 
-        els.characterBtn.addEventListener("click", () => {
-          fillCharacterDialog();
-          openDialog(els.characterDialog);
-        });
+        els.characterBtn.addEventListener("click", () => { fillCharacterDialog(); openDialog(els.characterDialog); });
         els.closeCharacter.addEventListener("click", () => closeDialog(els.characterDialog));
         els.cancelCharacter.addEventListener("click", () => closeDialog(els.characterDialog));
         els.saveCharacter.addEventListener("click", saveCharacterFromDialog);
@@ -1257,10 +1199,19 @@
           if (action === "next") switchVariant(index, 1);
           if (action === "copy") copyMessage(index);
         });
+
+        window.addEventListener("focus", () => { reloadSessionsKeepCurrent(); renderSessionList(); });
+        window.addEventListener("storage", (event) => {
+          if (event.key === STORAGE.sessions) { reloadSessionsKeepCurrent(); render(); }
+          if (event.key === STORAGE.settings) { settings = readObject(STORAGE.settings, DEFAULTS); applyTheme(); updateSummary(); }
+        });
+        if (window.matchMedia) {
+          window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (settings.theme === "auto") applyTheme(); });
+        }
       }
 
       unregisterOldServiceWorkers();
-      normalizeMessages();
+      applyTheme();
       bindEvents();
       render();
       setStatus("准备就绪", "ok");
