@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lily RP v6 Workbench</title>
+  <title>Lily RP v6.2 Workbench</title>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Lily RP" />
@@ -112,7 +112,7 @@
   <div class="app">
     <header class="header">
       <div class="header-inner">
-        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6</h1><p id="subtitle">角色库 · 世界书 · 记忆系统 · 回复调参 · 多窗口</p></div></div>
+        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6.2</h1><p id="subtitle">角色库 · 世界书 · 记忆系统 · 回复调参 · 多窗口</p></div></div>
         <div class="toolbar">
           <button id="themeToggleBtn" type="button">黑夜</button>
           <button id="newWindowBtn" type="button">新窗口</button>
@@ -248,7 +248,7 @@
   <script>
     (() => {
       "use strict";
-      const APP_VERSION = "v6.1.0";
+      const APP_VERSION = "v6.2.0";
       const STORAGE = { settings: "lily_rp_v6_settings", sessions: "lily_rp_v6_sessions", characters: "lily_rp_v6_characters", lore: "lily_rp_v6_lore", lastSession: "lily_rp_v6_last_session" };
       const V5 = { settings: "lily_rp_v5_settings", sessions: "lily_rp_v5_sessions", migrated: "lily_rp_v6_migrated_v5" };
       const DEFAULTS = { workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat", appToken: "", model: "deepseek-v4-flash", temperature: 0.9, maxTokens: 2800, thinkingMode: false, fixedCore: true, theme: "light" };
@@ -358,7 +358,7 @@
         els.closeLore.onclick = () => closeDialog(els.loreDialog); els.newLoreBtn.onclick = newLore; els.testLoreBtn.onclick = () => { renderTriggeredLorePreview(); toast("已刷新本轮世界书预览"); }; els.saveLoreBtn.onclick = saveLoreFromForm; els.deleteLoreBtn.onclick = deleteLore;
         els.closeMemory.onclick = els.cancelMemory.onclick = () => closeDialog(els.memoryDialog); els.saveMemoryBtn.onclick = saveMemoryFromForm; els.summarizeBtn.onclick = summarizeRecent; els.applySummaryToSceneBtn.onclick = () => { els.sceneSummaryInput.value = els.summaryDraftInput.value.trim(); toast("已应用到场景摘要，记得保存"); }; els.appendSummaryToLongBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = [els.longMemoryInput.value.trim(), draft].filter(Boolean).join("\n\n"); toast("已追加到长期记忆，记得保存"); }; els.compressHistoryBtn.onclick = compressHistory;
         els.closeControls.onclick = els.cancelControls.onclick = () => closeDialog(els.controlsDialog); els.saveControlsBtn.onclick = saveControlsFromForm; els.resetControlsBtn.onclick = () => fillControlsForm({ ...DEFAULT_CONTROLS });
-        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6", "_blank");
+        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6-2", "_blank");
         els.exportBtn.onclick = exportAll; els.importBtn.onclick = () => els.importFile.click(); els.importFile.onchange = importAll;
         els.clearBtn.onclick = clearChat;
         els.sessionList.onclick = e => { const btn = e.target.closest("button[data-session]"); if (btn) switchSession(btn.dataset.session); };
@@ -379,7 +379,7 @@
       function renderTriggeredLorePreview() { const triggered = selectTriggeredLore("", true); els.triggeredLoreList.innerHTML = ""; if (!triggered.length) { els.loreHint.textContent = "当前没有触发世界书。常驻项或关键词命中后会出现在这里。"; return; } els.loreHint.textContent = `预计触发 ${triggered.length} 条：`; triggered.forEach(l => { const d = document.createElement("div"); d.className = "pill"; d.textContent = `${l.title} · ${l.priority}`; els.triggeredLoreList.appendChild(d); }); }
 
       function switchSession(id) { if (!sessions.some(s => s.id === id)) return; currentSessionId = id; saveAll(); renderAll(); }
-      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6", "_blank"); }
+      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6-2", "_blank"); }
       function copyCurrentSession() { const cur = currentSession(); const copy = JSON.parse(JSON.stringify(cur)); copy.id = uid("win"); copy.title = (cur.title || "窗口") + " · 副本"; copy.createdAt = nowIso(); copy.updatedAt = nowIso(); sessions.unshift(copy); currentSessionId = copy.id; saveAll(); renderAll(); toast("已复制当前窗口"); }
       function renameCurrentSession() { const cur = currentSession(); const name = prompt("窗口名：", cur.title || ""); if (!name) return; cur.title = name.trim(); cur.updatedAt = nowIso(); saveAll(); renderAll(); }
       function deleteCurrentSession() { if (sessions.length <= 1) return toast("至少保留一个窗口", "err"); if (!confirm("确定删除当前窗口？聊天记录会一起删除。")) return; sessions = sessions.filter(s => s.id !== currentSessionId); currentSessionId = sessions[0].id; saveAll(); renderAll(); }
@@ -421,10 +421,91 @@
       function saveControlsFromForm() { const s = currentSession(); s.controls = { length: els.ctrlLength.value, pace: els.ctrlPace.value, dialogue: els.ctrlDialogue.value, detail: els.ctrlDetail.value, initiative: els.ctrlInitiative.value, emotion: els.ctrlEmotion.value, conflict: els.ctrlConflict.value, ending: els.ctrlEnding.value, extra: els.ctrlExtra.value.trim() }; s.updatedAt = nowIso(); saveAll(); closeDialog(els.controlsDialog); renderAll(); toast("回复调参已保存"); }
       function controlsSummary(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; return `${c.length}/${c.pace}/${c.emotion}`; }
 
-      async function sendUser() { const text = els.userInput.value.trim(); if (!text || busy) return; const s = currentSession(); s.messages.push({ id: uid("msg"), role: "user", content: text, createdAt: nowIso() }); els.userInput.value = ""; els.userInput.style.height = "auto"; s.updatedAt = nowIso(); saveAll(); renderAll(); await generateAssistant({ regenerateIndex: -1 }); }
-      async function continueStory() { if (busy) return; const s = currentSession(); s.messages.push({ id: uid("msg"), role: "user", content: "（请根据当前角色、场景、记忆和上一段剧情自然续写。不要代替玩家角色做决定。）", createdAt: nowIso() }); s.updatedAt = nowIso(); saveAll(); renderAll(); await generateAssistant({ regenerateIndex: -1 }); }
-      async function regenerateLast() { const s = currentSession(); const idx = findLastAssistantIndex(s.messages); if (idx < 0) return toast("没有可重新生成的 AI 回复", "err"); await generateAssistant({ regenerateIndex: idx }); }
-      async function generateAssistant({ regenerateIndex }) { const s = currentSession(); try { setBusy(true); const baseMessages = regenerateIndex >= 0 ? s.messages.slice(0, regenerateIndex) : s.messages.slice(); const request = buildRequestMessages(baseMessages); const data = await callDeepSeek(request); const parsed = parseReply(data); if (!parsed.content) throw new Error("API 没有返回正文"); if (regenerateIndex >= 0) { const m = s.messages[regenerateIndex]; if (!Array.isArray(m.versions)) m.versions = [{ content: selectedContent(m), reasoning: selectedReasoning(m), createdAt: m.createdAt || nowIso() }]; m.versions.push({ content: parsed.content, reasoning: parsed.reasoning, createdAt: nowIso() }); m.currentVersion = m.versions.length - 1; } else { s.messages.push({ id: uid("msg"), role: "assistant", versions: [{ content: parsed.content, reasoning: parsed.reasoning, createdAt: nowIso() }], currentVersion: 0, createdAt: nowIso() }); } s.updatedAt = nowIso(); saveAll(); renderAll(); els.status.textContent = "已生成"; els.status.title = ""; els.status.className = "status ok"; } catch (err) { const msg = readableError(err); els.status.textContent = "生成失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); } finally { setBusy(false); } }
+      function ensureReadyForApi() {
+        const missing = [];
+        if (!settings.workerUrl || settings.workerUrl.includes("你的-worker") || settings.workerUrl.includes("YOUR-WORKER")) missing.push("Worker 接口地址");
+        if (!settings.appToken) missing.push("APP_TOKEN");
+        if (missing.length) {
+          const msg = "请先在设置里填写：" + missing.join("、");
+          els.status.textContent = msg;
+          els.status.title = msg;
+          els.status.className = "status err";
+          toast(msg, "err", 12000);
+          openSettings();
+          return false;
+        }
+        return true;
+      }
+      async function sendUser() {
+        const text = els.userInput.value.trim();
+        if (!text || busy) return;
+        if (!ensureReadyForApi()) return;
+        const s = currentSession();
+        s.messages.push({ id: uid("msg"), role: "user", content: text, createdAt: nowIso() });
+        els.userInput.value = "";
+        els.userInput.style.height = "auto";
+        s.updatedAt = nowIso();
+        saveAll();
+        renderAll();
+        await generateAssistant({ regenerateIndex: -1 });
+      }
+      async function continueStory() {
+        if (busy) return;
+        if (!ensureReadyForApi()) return;
+        const s = currentSession();
+        s.messages.push({ id: uid("msg"), role: "user", content: "（请根据当前角色、场景、记忆和上一段剧情自然续写。不要代替玩家角色做决定。）", createdAt: nowIso() });
+        s.updatedAt = nowIso();
+        saveAll();
+        renderAll();
+        await generateAssistant({ regenerateIndex: -1 });
+      }
+      async function regenerateLast() {
+        if (busy) return;
+        if (!ensureReadyForApi()) return;
+        const s = currentSession();
+        const idx = findLastAssistantIndex(s.messages);
+        if (idx < 0) return toast("没有可重新生成的 AI 回复", "err");
+        await generateAssistant({ regenerateIndex: idx });
+      }
+      async function generateAssistant({ regenerateIndex }) {
+        const s = currentSession();
+        try {
+          setBusy(true);
+          els.status.textContent = regenerateIndex >= 0 ? "正在重新生成……" : "正在生成……";
+          els.status.title = "";
+          els.status.className = "status";
+          const baseMessages = regenerateIndex >= 0 ? s.messages.slice(0, regenerateIndex) : s.messages.slice();
+          const request = buildRequestMessages(baseMessages);
+          const data = await callDeepSeek(request);
+          const parsed = parseReply(data);
+          if (!parsed.content) {
+            const raw = JSON.stringify(data).slice(0, 800);
+            throw new Error("API 没有返回正文。原始返回：" + raw);
+          }
+          if (regenerateIndex >= 0) {
+            const m = s.messages[regenerateIndex];
+            if (!Array.isArray(m.versions)) m.versions = [{ content: selectedContent(m), reasoning: selectedReasoning(m), createdAt: m.createdAt || nowIso() }];
+            m.versions.push({ content: parsed.content, reasoning: parsed.reasoning, createdAt: nowIso() });
+            m.currentVersion = m.versions.length - 1;
+          } else {
+            s.messages.push({ id: uid("msg"), role: "assistant", versions: [{ content: parsed.content, reasoning: parsed.reasoning, createdAt: nowIso() }], currentVersion: 0, createdAt: nowIso() });
+          }
+          s.updatedAt = nowIso();
+          saveAll();
+          renderAll();
+          els.status.textContent = "已生成";
+          els.status.title = "";
+          els.status.className = "status ok";
+        } catch (err) {
+          const msg = readableError(err);
+          els.status.textContent = "生成失败：" + msg.slice(0, 180);
+          els.status.title = msg;
+          els.status.className = "status err";
+          toast(msg, "err", 15000);
+        } finally {
+          setBusy(false);
+        }
+      }
       function findLastAssistantIndex(msgs) { for (let i = msgs.length - 1; i >= 0; i--) if (msgs[i].role === "assistant") return i; return -1; }
       function handleChatAction(e) { const b = e.target.closest("button[data-action]"); if (!b) return; const s = currentSession(); const idx = Number(b.dataset.index); const m = s.messages[idx]; if (!m || m.role !== "assistant") return; const action = b.dataset.action; if (action === "regen") return generateAssistant({ regenerateIndex: idx }); if (action === "copy") return copyText(selectedContent(m)); if (!Array.isArray(m.versions) || m.versions.length < 2) return; if (action === "prev") m.currentVersion = Math.max(0, (m.currentVersion || 0) - 1); if (action === "next") m.currentVersion = Math.min(m.versions.length - 1, (m.currentVersion || 0) + 1); saveAll(); renderChat(); }
       function copyText(text) { navigator.clipboard?.writeText(text).then(() => toast("已复制")).catch(() => { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); toast("已复制"); }); }
