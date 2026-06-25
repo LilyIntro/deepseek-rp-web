@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lily RP v6.2 Workbench</title>
+  <title>Lily RP v6.3 Workbench</title>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Lily RP" />
@@ -112,7 +112,7 @@
   <div class="app">
     <header class="header">
       <div class="header-inner">
-        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6.2</h1><p id="subtitle">角色库 · 世界书 · 记忆系统 · 回复调参 · 多窗口</p></div></div>
+        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6.3</h1><p id="subtitle">角色库 · 世界书 · 记忆系统 · 回复调参 · 多窗口</p></div></div>
         <div class="toolbar">
           <button id="themeToggleBtn" type="button">黑夜</button>
           <button id="newWindowBtn" type="button">新窗口</button>
@@ -248,7 +248,7 @@
   <script>
     (() => {
       "use strict";
-      const APP_VERSION = "v6.2.0";
+      const APP_VERSION = "v6.3.0";
       const STORAGE = { settings: "lily_rp_v6_settings", sessions: "lily_rp_v6_sessions", characters: "lily_rp_v6_characters", lore: "lily_rp_v6_lore", lastSession: "lily_rp_v6_last_session" };
       const V5 = { settings: "lily_rp_v5_settings", sessions: "lily_rp_v5_sessions", migrated: "lily_rp_v6_migrated_v5" };
       const DEFAULTS = { workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat", appToken: "", model: "deepseek-v4-flash", temperature: 0.9, maxTokens: 2800, thinkingMode: false, fixedCore: true, theme: "light" };
@@ -268,7 +268,7 @@
       ].join("\n");
       const $ = (id) => document.getElementById(id);
       const els = {};
-      ["themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","summarizeBtn","applySummaryToSceneBtn","appendSummaryToLongBtn","compressHistoryBtn","summaryDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
+      ["themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","loreHint","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","summarizeBtn","applySummaryToSceneBtn","appendSummaryToLongBtn","compressHistoryBtn","summaryDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
 
       let settings = readObject(STORAGE.settings, DEFAULTS);
       let sessions = readArray(STORAGE.sessions);
@@ -278,6 +278,9 @@
       let selectedCharId = "";
       let selectedLoreId = "";
       let busy = false;
+
+      window.addEventListener("error", (e) => { try { if (els.status) { els.status.textContent = "脚本错误：" + (e.message || "未知错误").slice(0, 180); els.status.className = "status err"; } console.error(e.error || e.message); } catch {} });
+      window.addEventListener("unhandledrejection", (e) => { try { if (els.status) { els.status.textContent = "异步错误：" + (e.reason?.message || String(e.reason || "未知错误")).slice(0, 180); els.status.className = "status err"; } console.error(e.reason); } catch {} });
 
       boot();
 
@@ -358,7 +361,7 @@
         els.closeLore.onclick = () => closeDialog(els.loreDialog); els.newLoreBtn.onclick = newLore; els.testLoreBtn.onclick = () => { renderTriggeredLorePreview(); toast("已刷新本轮世界书预览"); }; els.saveLoreBtn.onclick = saveLoreFromForm; els.deleteLoreBtn.onclick = deleteLore;
         els.closeMemory.onclick = els.cancelMemory.onclick = () => closeDialog(els.memoryDialog); els.saveMemoryBtn.onclick = saveMemoryFromForm; els.summarizeBtn.onclick = summarizeRecent; els.applySummaryToSceneBtn.onclick = () => { els.sceneSummaryInput.value = els.summaryDraftInput.value.trim(); toast("已应用到场景摘要，记得保存"); }; els.appendSummaryToLongBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = [els.longMemoryInput.value.trim(), draft].filter(Boolean).join("\n\n"); toast("已追加到长期记忆，记得保存"); }; els.compressHistoryBtn.onclick = compressHistory;
         els.closeControls.onclick = els.cancelControls.onclick = () => closeDialog(els.controlsDialog); els.saveControlsBtn.onclick = saveControlsFromForm; els.resetControlsBtn.onclick = () => fillControlsForm({ ...DEFAULT_CONTROLS });
-        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6-2", "_blank");
+        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6-3", "_blank");
         els.exportBtn.onclick = exportAll; els.importBtn.onclick = () => els.importFile.click(); els.importFile.onchange = importAll;
         els.clearBtn.onclick = clearChat;
         els.sessionList.onclick = e => { const btn = e.target.closest("button[data-session]"); if (btn) switchSession(btn.dataset.session); };
@@ -376,10 +379,10 @@
       function renderSidebar() { const s = currentSession(); const active = activeCharacters(s); els.activeCharList.innerHTML = ""; els.activeCharHint.textContent = active.length ? "当前启用角色会参与 prompt。" : "未启用角色。点「角色库」添加并勾选当前窗口启用。"; active.forEach(c => { const d = document.createElement("div"); d.className = "pill"; d.textContent = `${c.name}${s.primaryCharacterId === c.id ? " · 主控" : ""}`; els.activeCharList.appendChild(d); }); const mem = [s.memory.lockedMemory, s.memory.longMemory, s.memory.sceneSummary].filter(Boolean).join("\n").trim(); els.memoryPreview.textContent = mem ? mem.slice(0, 160) + (mem.length > 160 ? "……" : "") : "未写入长期记忆。"; els.sessionDesc.textContent = `角色 ${active.length} · 世界书 ${lorebook.filter(l=>l.enabled).length} · ${controlsSummary(s.controls)}`; }
       function renderChat() { els.chat.innerHTML = ""; const msgs = currentSession().messages; if (!msgs.length) { const e = document.createElement("div"); e.className = "empty"; e.textContent = "还没有对话。你可以先在「角色库」启用角色，在「世界书」写设定，在「记忆」写当前剧情，再开始。"; els.chat.appendChild(e); return; } msgs.forEach((m, idx) => { const wrap = document.createElement("div"); wrap.className = "message " + (m.role || "system"); const bubble = document.createElement("div"); bubble.className = "bubble"; const content = document.createElement("div"); content.className = "content"; content.textContent = selectedContent(m); bubble.appendChild(content); if (m.role === "assistant") { const reasoning = selectedReasoning(m); if (reasoning) { const det = document.createElement("details"); det.className = "reasoning"; const sum = document.createElement("summary"); sum.textContent = "思考过程"; const body = document.createElement("div"); body.className = "reasoning-body"; body.textContent = reasoning; det.append(sum, body); bubble.appendChild(det); } const actions = document.createElement("div"); actions.className = "msg-actions"; actions.append(actionBtn("重新生成", "regen", idx), actionBtn("上一版", "prev", idx), actionBtn("下一版", "next", idx), actionBtn("复制", "copy", idx)); const ver = document.createElement("span"); ver.className = "mini"; const total = Array.isArray(m.versions) ? m.versions.length : 1; ver.textContent = `${(m.currentVersion || 0) + 1}/${total}`; actions.appendChild(ver); bubble.appendChild(actions); } wrap.appendChild(bubble); els.chat.appendChild(wrap); }); els.chat.scrollTop = els.chat.scrollHeight; }
       function actionBtn(text, action, index) { const b = document.createElement("button"); b.type = "button"; b.className = "mini"; b.dataset.action = action; b.dataset.index = String(index); b.textContent = text; return b; }
-      function renderTriggeredLorePreview() { const triggered = selectTriggeredLore("", true); els.triggeredLoreList.innerHTML = ""; if (!triggered.length) { els.loreHint.textContent = "当前没有触发世界书。常驻项或关键词命中后会出现在这里。"; return; } els.loreHint.textContent = `预计触发 ${triggered.length} 条：`; triggered.forEach(l => { const d = document.createElement("div"); d.className = "pill"; d.textContent = `${l.title} · ${l.priority}`; els.triggeredLoreList.appendChild(d); }); }
+      function renderTriggeredLorePreview() { if (!els.triggeredLoreList) return; const triggered = selectTriggeredLore("", true); els.triggeredLoreList.innerHTML = ""; if (!triggered.length) { if (els.loreHint) els.loreHint.textContent = "当前没有触发世界书。常驻项或关键词命中后会出现在这里。"; return; } if (els.loreHint) els.loreHint.textContent = `预计触发 ${triggered.length} 条：`; triggered.forEach(l => { const d = document.createElement("div"); d.className = "pill"; d.textContent = `${l.title} · ${l.priority}`; els.triggeredLoreList.appendChild(d); }); }
 
       function switchSession(id) { if (!sessions.some(s => s.id === id)) return; currentSessionId = id; saveAll(); renderAll(); }
-      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6-2", "_blank"); }
+      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6-3", "_blank"); }
       function copyCurrentSession() { const cur = currentSession(); const copy = JSON.parse(JSON.stringify(cur)); copy.id = uid("win"); copy.title = (cur.title || "窗口") + " · 副本"; copy.createdAt = nowIso(); copy.updatedAt = nowIso(); sessions.unshift(copy); currentSessionId = copy.id; saveAll(); renderAll(); toast("已复制当前窗口"); }
       function renameCurrentSession() { const cur = currentSession(); const name = prompt("窗口名：", cur.title || ""); if (!name) return; cur.title = name.trim(); cur.updatedAt = nowIso(); saveAll(); renderAll(); }
       function deleteCurrentSession() { if (sessions.length <= 1) return toast("至少保留一个窗口", "err"); if (!confirm("确定删除当前窗口？聊天记录会一起删除。")) return; sessions = sessions.filter(s => s.id !== currentSessionId); currentSessionId = sessions[0].id; saveAll(); renderAll(); }
