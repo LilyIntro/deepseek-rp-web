@@ -3,590 +3,1268 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>DeepSeek RP Web</title>
+  <title>Lily RP v4</title>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="RP Web" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Lily RP" />
   <style>
     :root {
       --bg: #f6f7fb;
-      --panel: #ffffff;
+      --card: #ffffff;
       --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --line-strong: #d1d5db;
       --primary: #2563eb;
-      --primary2: #1d4ed8;
-      --bubble-user: #2563eb;
-      --bubble-ai: #ffffff;
-      --danger: #ef4444;
-      --shadow: 0 10px 30px rgba(17, 24, 39, .08);
+      --primary-soft: #eff6ff;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --green: #16a34a;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
     }
+
     * { box-sizing: border-box; }
+
     html, body { height: 100%; }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      color: var(--text);
       background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
     }
-    button, input, textarea, select { font: inherit; }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
     button {
-      border: 1px solid var(--border);
+      border: 1px solid var(--line-strong);
       background: #fff;
       color: var(--text);
       border-radius: 12px;
       padding: 9px 13px;
       cursor: pointer;
-      transition: .15s ease;
+      transition: transform 0.08s ease, border-color 0.15s ease, background 0.15s ease;
     }
-    button:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(17,24,39,.08); }
-    button.primary { border-color: var(--primary); background: var(--primary); color: white; }
-    button.primary:hover { background: var(--primary2); }
-    button.danger { color: var(--danger); border-color: #fecaca; }
-    button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    button:hover { border-color: #9ca3af; background: #f9fafb; }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .primary {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+    .primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+    .danger {
+      border-color: #fecaca;
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
 
     .app {
       min-height: 100dvh;
       display: grid;
       grid-template-rows: auto 1fr auto;
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 14px;
-      gap: 12px;
     }
-    .topbar {
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 14px 16px;
-      box-shadow: var(--shadow);
+      gap: 14px;
     }
-    .title h1 { margin: 0; font-size: 22px; line-height: 1.15; }
-    .title p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .chat {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 18px;
-      overflow-y: auto;
-      min-height: 360px;
-    }
-    .empty {
-      height: 100%;
-      min-height: 360px;
+
+    .brand {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      text-align: center;
-      color: var(--muted);
-      gap: 8px;
+      gap: 12px;
+      min-width: 0;
     }
-    .empty strong { color: var(--text); font-size: 22px; }
-    .msg {
-      display: flex;
-      margin: 12px 0;
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #2563eb, #8b5cf6);
+      color: #fff;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
     }
-    .msg.user { justify-content: flex-end; }
-    .bubble {
-      max-width: min(760px, 86%);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 12px 14px;
-      white-space: pre-wrap;
-      line-height: 1.65;
-      word-break: break-word;
-      box-shadow: 0 4px 14px rgba(17,24,39,.04);
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
     }
-    .user .bubble { background: var(--bubble-user); color: white; border-color: var(--bubble-user); border-bottom-right-radius: 6px; }
-    .assistant .bubble { background: var(--bubble-ai); color: var(--text); border-bottom-left-radius: 6px; }
-    .note {
-      text-align: center;
+
+    .brand p {
+      margin: 2px 0 0;
       color: var(--muted);
       font-size: 13px;
-      margin: 10px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .note.error { color: var(--danger); }
-    .composer {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 12px;
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-    #userInput {
-      flex: 1;
-      min-height: 46px;
-      max-height: 180px;
-      resize: none;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 12px 14px;
-      outline: none;
-      background: #fbfdff;
-    }
-    #userInput:focus { border-color: #93c5fd; box-shadow: 0 0 0 4px rgba(37,99,235,.1); }
-    .composerBtns { display: flex; gap: 8px; }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(17,24,39,.35);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      z-index: 100;
-    }
-    .overlay.open { display: flex; }
-    .modal {
-      width: min(760px, 100%);
-      max-height: min(86vh, 820px);
-      overflow-y: auto;
-      background: #fff;
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      box-shadow: 0 30px 80px rgba(17,24,39,.25);
-      padding: 18px;
-    }
-    .modalHeader {
+    .toolbar {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
     }
-    .modalHeader h2 { margin: 0; font-size: 20px; }
-    .formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    label { display: grid; gap: 6px; margin: 10px 0; color: var(--muted); font-size: 13px; }
-    input, textarea, select {
+
+    .main {
+      max-width: 1120px;
       width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 11px 12px;
-      color: var(--text);
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .card h2, .card h3 {
+      margin: 0 0 8px;
+      line-height: 1.3;
+    }
+
+    .card h2 { font-size: 20px; }
+    .card h3 { font-size: 15px; }
+    .card p { margin: 7px 0; color: var(--muted); font-size: 14px; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      padding: 5px 9px;
+      font-size: 12px;
+    }
+
+    .chat-card {
+      min-height: calc(100dvh - 188px);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    .chat-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-head h2 { margin: 0; font-size: 18px; }
+    .chat-head p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+    .status {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .status.ok { color: var(--green); }
+    .status.err { color: var(--danger); }
+
+    .chat {
+      min-height: 360px;
+      max-height: calc(100dvh - 282px);
+      overflow-y: auto;
+      padding: 18px;
+      background: linear-gradient(180deg, #fff, #fbfcff);
+    }
+
+    .empty {
+      border: 1px dashed var(--line-strong);
+      border-radius: 16px;
+      padding: 22px;
+      color: var(--muted);
       background: #fff;
+    }
+
+    .message {
+      margin: 0 0 15px;
+      display: flex;
+    }
+
+    .message.user { justify-content: flex-end; }
+    .message.assistant { justify-content: flex-start; }
+    .message.system { justify-content: center; }
+
+    .bubble {
+      max-width: min(760px, 92%);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 13px 15px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .user .bubble {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 6px;
+    }
+
+    .assistant .bubble {
+      border-bottom-left-radius: 6px;
+    }
+
+    .system .bubble {
+      background: #f9fafb;
+      color: var(--muted);
+      max-width: 88%;
+      text-align: center;
+      font-size: 14px;
+      box-shadow: none;
+    }
+
+    .content {
+      white-space: pre-wrap;
+    }
+
+    .msg-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .mini {
+      padding: 5px 8px;
+      border-radius: 9px;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    details.reasoning {
+      margin-top: 11px;
+      border: 1px solid #dbeafe;
+      background: #eff6ff;
+      border-radius: 12px;
+      padding: 9px 11px;
+    }
+
+    details.reasoning summary {
+      cursor: pointer;
+      color: #1d4ed8;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .reasoning-body {
+      margin-top: 8px;
+      color: #1f2937;
+      font-size: 13px;
+      white-space: pre-wrap;
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    .composer-wrap {
+      position: sticky;
+      bottom: 0;
+      background: rgba(246, 247, 251, 0.94);
+      backdrop-filter: blur(18px);
+      border-top: 1px solid var(--line);
+      padding: 12px 18px max(12px, env(safe-area-inset-bottom));
+    }
+
+    .composer {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .input-shell {
+      background: #fff;
+      border: 1px solid var(--line-strong);
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    textarea {
+      width: 100%;
+      border: 0;
+      outline: none;
+      resize: none;
+      min-height: 52px;
+      max-height: 180px;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .send-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    dialog {
+      width: min(760px, calc(100vw - 26px));
+      border: 0;
+      border-radius: 20px;
+      padding: 0;
+      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.24);
+    }
+
+    dialog::backdrop {
+      background: rgba(15, 23, 42, 0.32);
+      backdrop-filter: blur(3px);
+    }
+
+    .dialog-card {
+      padding: 18px;
+      background: #fff;
+    }
+
+    .dialog-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .dialog-head h2 { margin: 0; font-size: 18px; }
+
+    label {
+      display: block;
+      margin: 12px 0;
+      color: #374151;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input, select, .dialog-card textarea {
+      width: 100%;
+      margin-top: 6px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--text);
       outline: none;
     }
-    textarea { resize: vertical; min-height: 84px; }
-    input:focus, textarea:focus, select:focus { border-color: #93c5fd; box-shadow: 0 0 0 4px rgba(37,99,235,.1); }
-    .check { display: flex; grid-template-columns: auto 1fr; align-items: center; gap: 8px; }
-    .check input { width: auto; }
-    .modalActions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
-    .small { font-size: 12px; color: var(--muted); }
 
-    @media (max-width: 720px) {
-      .app { padding: 8px; gap: 8px; }
-      .topbar { align-items: flex-start; flex-direction: column; border-radius: 18px; }
-      .actions { justify-content: flex-start; }
-      .chat { border-radius: 18px; padding: 12px; }
-      .composer { border-radius: 18px; flex-direction: column; align-items: stretch; }
-      .composerBtns { justify-content: flex-end; }
-      .formGrid { grid-template-columns: 1fr; }
-      .bubble { max-width: 94%; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .checkline {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .checkline input { width: auto; margin: 4px 0 0; }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 94px;
+      transform: translateX(-50%);
+      max-width: min(680px, calc(100vw - 28px));
+      z-index: 100;
+      background: #111827;
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 15px;
+      box-shadow: 0 16px 44px rgba(15, 23, 42, 0.28);
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .toast.show { display: block; }
+    .toast.err { background: #991b1b; }
+
+    @media (max-width: 880px) {
+      .header-inner { align-items: flex-start; flex-direction: column; }
+      .toolbar { justify-content: flex-start; }
+      .main { grid-template-columns: 1fr; padding: 12px; }
+      .side { display: grid; grid-template-columns: 1fr; }
+      .chat { max-height: none; min-height: 54dvh; }
+      .chat-card { min-height: auto; }
+      .composer { grid-template-columns: 1fr; }
+      .send-row { justify-content: flex-end; }
+      .grid2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .toolbar button, .send-row button { flex: 1; }
+      .toolbar, .send-row { width: 100%; }
+      .bubble { max-width: 100%; }
+      .brand p { white-space: normal; }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <header class="topbar">
-      <div class="title">
-        <h1 id="pageTitle">DeepSeek RP Web</h1>
-        <p id="subtitle">纯白简洁版 · 角色扮演 / 酒馆 / 剧情聊天</p>
-      </div>
-      <div class="actions">
-        <button id="characterBtn" type="button">角色卡</button>
-        <button id="settingsBtn" type="button">设置</button>
-        <button id="exportBtn" type="button">导出</button>
-        <button id="clearBtn" class="danger" type="button">清空</button>
+    <header class="header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="logo">L</div>
+          <div>
+            <h1>Lily RP v4</h1>
+            <p id="subtitle">纯白稳定版 · 重新生成 · 思考折叠 · 固定文风</p>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button id="characterBtn" type="button">角色卡</button>
+          <button id="settingsBtn" type="button">设置</button>
+          <button id="regenLastBtn" type="button">重新生成</button>
+          <button id="exportBtn" type="button">导出</button>
+          <button id="clearBtn" type="button" class="danger">清空</button>
+        </div>
       </div>
     </header>
 
-    <main id="chat" class="chat"></main>
+    <main class="main">
+      <aside class="side">
+        <section class="card">
+          <h2 id="characterTitle">未设置角色</h2>
+          <p id="characterDesc">点「角色卡」写入角色设定、场景和长期记忆。</p>
+          <div class="pill-row">
+            <span class="pill" id="modelPill">deepseek-v4-flash</span>
+            <span class="pill" id="thinkingPill">思考：关</span>
+            <span class="pill" id="stylePill">固定文风：开</span>
+          </div>
+        </section>
 
-    <form id="composer" class="composer">
-      <textarea id="userInput" rows="1" placeholder="输入你的台词、动作或剧情……"></textarea>
-      <div class="composerBtns">
-        <button id="continueBtn" type="button">续写</button>
-        <button id="sendBtn" class="primary" type="submit">发送</button>
-      </div>
-    </form>
+        <section class="card">
+          <h3>固定文风预设</h3>
+          <p>已内置成熟出版小说风格：段落饱满、减少零散短句、严格遵循人设、承接线索并推进情节。</p>
+          <p>它仍会消耗少量 token，但比每张卡重复粘贴长规则更省，也更稳定。</p>
+        </section>
+
+        <section class="card">
+          <h3>操作说明</h3>
+          <p>不满意最后一条回复时，点顶部「重新生成」。每条 AI 回复下方也可以单独重抽，并支持版本切换。</p>
+          <p>开启思考后，AI 回复下方会出现可展开的「思考过程」。</p>
+        </section>
+      </aside>
+
+      <section class="card chat-card">
+        <div class="chat-head">
+          <div>
+            <h2>当前对话</h2>
+            <p id="chatMeta">本地存档 · 只保存在当前浏览器</p>
+          </div>
+          <div id="status" class="status">未测试连接</div>
+        </div>
+        <div id="chat" class="chat"></div>
+      </section>
+    </main>
+
+    <footer class="composer-wrap">
+      <form id="composer" class="composer">
+        <div class="input-shell">
+          <textarea id="userInput" placeholder="输入你的动作、台词或剧情……"></textarea>
+        </div>
+        <div class="send-row">
+          <button id="continueBtn" type="button">续写</button>
+          <button id="sendBtn" type="submit" class="primary">发送</button>
+        </div>
+      </form>
+    </footer>
   </div>
 
-  <div id="settingsOverlay" class="overlay" aria-hidden="true">
-    <section class="modal">
-      <div class="modalHeader">
+  <dialog id="settingsDialog">
+    <div class="dialog-card">
+      <div class="dialog-head">
         <h2>设置</h2>
-        <button id="closeSettings" type="button">关闭</button>
+        <button id="closeSettings" type="button">×</button>
       </div>
+
       <label>Worker 接口地址
         <input id="workerUrl" placeholder="https://xxx.workers.dev/chat" />
       </label>
+
       <label>APP_TOKEN
-        <input id="appToken" type="password" placeholder="你自己在 Cloudflare 设置的 APP_TOKEN" />
+        <input id="appToken" type="password" placeholder="输入你在 Cloudflare 设置的 APP_TOKEN" />
       </label>
-      <div class="formGrid">
+
+      <div class="grid2">
         <label>模型
-          <select id="model">
+          <select id="modelSelect">
             <option value="deepseek-v4-flash">deepseek-v4-flash</option>
             <option value="deepseek-v4-pro">deepseek-v4-pro</option>
           </select>
         </label>
         <label>Temperature
-          <input id="temperature" type="number" min="0" max="2" step="0.1" />
+          <input id="temperatureInput" type="number" min="0" max="2" step="0.1" />
         </label>
       </div>
-      <label>Max Tokens
-        <input id="maxTokens" type="number" min="256" max="4000" step="100" />
-      </label>
-      <label class="check">
-        <input id="thinking" type="checkbox" />
-        开启思考模式
-      </label>
-      <p class="small">APP_TOKEN 不是 DeepSeek API Key，是你自己设置的网页访问密码。DeepSeek API Key 仍保存在 Cloudflare Worker Secret 里。</p>
-      <div class="modalActions">
-        <button id="testBtn" type="button">测试连接</button>
-        <button id="saveSettings" class="primary" type="button">保存</button>
-      </div>
-    </section>
-  </div>
 
-  <div id="characterOverlay" class="overlay" aria-hidden="true">
-    <section class="modal">
-      <div class="modalHeader">
-        <h2>角色卡</h2>
-        <button id="closeCharacter" type="button">关闭</button>
+      <div class="grid2">
+        <label>Max Tokens
+          <input id="maxTokensInput" type="number" min="256" max="4000" step="100" />
+        </label>
+        <label>上下文轮数
+          <input id="historyTurnsInput" type="number" min="4" max="80" step="2" />
+        </label>
       </div>
-      <div class="formGrid">
+
+      <label class="checkline">
+        <input id="thinkingInput" type="checkbox" />
+        <span>开启思考模式，并在回复下方显示可折叠「思考过程」。</span>
+      </label>
+
+      <label class="checkline">
+        <input id="fixedStyleInput" type="checkbox" />
+        <span>使用内置固定文风预设。</span>
+      </label>
+
+      <div class="dialog-actions">
+        <button id="testBtn" type="button">测试连接</button>
+        <button id="cancelSettings" type="button">取消</button>
+        <button id="saveSettings" type="button" class="primary">保存</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="characterDialog">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <h2>角色卡</h2>
+        <button id="closeCharacter" type="button">×</button>
+      </div>
+
+      <div class="grid2">
         <label>角色名
-          <input id="characterName" placeholder="例如：莉莉娅" />
+          <input id="characterNameInput" placeholder="例如：Lyn" />
         </label>
         <label>你的昵称
-          <input id="playerName" placeholder="例如：旅人" />
+          <input id="playerNameInput" placeholder="例如：旅人 / 旁白 / 你的名字" />
         </label>
       </div>
+
       <label>角色设定
-        <textarea id="characterPrompt" placeholder="写角色身份、性格、说话方式、关系、禁忌等。"></textarea>
+        <textarea id="characterPromptInput" rows="5" placeholder="写身份、性格、说话方式、关系、禁忌等。"></textarea>
       </label>
+
       <label>场景设定
-        <textarea id="scenarioPrompt" placeholder="写世界观、地点、当前剧情、开场等。"></textarea>
+        <textarea id="scenarioPromptInput" rows="5" placeholder="写当前地点、世界观、开场剧情、当前任务等。"></textarea>
       </label>
+
       <label>长期记忆
-        <textarea id="memoryPrompt" placeholder="写已经发生的重要事件、关系变化、约定等。"></textarea>
+        <textarea id="memoryPromptInput" rows="4" placeholder="写已经发生的重要事件、关系变化、约定、伏笔等。"></textarea>
       </label>
-      <label>回复风格
-        <textarea id="stylePrompt" placeholder="例如：沉浸式描写；不要替用户发言；每次回复 2-6 段。"></textarea>
-      </label>
-      <div class="modalActions">
-        <button id="saveCharacter" class="primary" type="button">保存角色卡</button>
+
+      <div class="dialog-actions">
+        <button id="cancelCharacter" type="button">取消</button>
+        <button id="saveCharacter" type="button" class="primary">保存角色卡</button>
       </div>
-    </section>
-  </div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
 
   <script>
-    // 删除旧版本 Service Worker，避免旧 app.js/style.css 缓存影响当前页面
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations?.().then(regs => regs.forEach(reg => reg.unregister())).catch(() => {});
-    }
+    (() => {
+      "use strict";
 
-    const DEFAULTS = {
-      workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat",
-      model: "deepseek-v4-flash",
-      temperature: 0.9,
-      maxTokens: 2800,
-      thinking: false,
-      stylePrompt: "沉浸式角色扮演；描写有画面感；保持角色性格一致；不要替用户说话或替用户做决定；每次回复 2-6 段。"
-    };
-
-    const $ = (id) => document.getElementById(id);
-    const chatEl = $("chat");
-    const composer = $("composer");
-    const userInput = $("userInput");
-    const sendBtn = $("sendBtn");
-    const continueBtn = $("continueBtn");
-
-    let messages = JSON.parse(localStorage.getItem("rp_messages_v3") || "[]");
-
-    function getSettings() {
-      return {
-        workerUrl: localStorage.getItem("rp_workerUrl") || DEFAULTS.workerUrl,
-        appToken: localStorage.getItem("rp_appToken") || "",
-        model: localStorage.getItem("rp_model") || DEFAULTS.model,
-        temperature: Number(localStorage.getItem("rp_temperature") || DEFAULTS.temperature),
-        maxTokens: Number(localStorage.getItem("rp_maxTokens") || DEFAULTS.maxTokens),
-        thinking: localStorage.getItem("rp_thinking") === "true",
-        characterName: localStorage.getItem("rp_characterName") || "",
-        playerName: localStorage.getItem("rp_playerName") || "",
-        characterPrompt: localStorage.getItem("rp_characterPrompt") || "",
-        scenarioPrompt: localStorage.getItem("rp_scenarioPrompt") || "",
-        memoryPrompt: localStorage.getItem("rp_memoryPrompt") || "",
-        stylePrompt: localStorage.getItem("rp_stylePrompt") || DEFAULTS.stylePrompt
+      const APP_VERSION = "v4.0.0";
+      const STORAGE = {
+        settings: "lily_rp_v4_settings",
+        profile: "lily_rp_v4_profile",
+        messages: "lily_rp_v4_messages"
       };
-    }
 
-    function setText() {
-      const s = getSettings();
-      $("pageTitle").textContent = s.characterName ? `${s.characterName} · RP Web` : "DeepSeek RP Web";
-      $("subtitle").textContent = s.appToken ? `已连接 · ${s.model}` : "未连接 · 点“设置”填写 APP_TOKEN";
-    }
+      const DEFAULTS = {
+        workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat",
+        appToken: "",
+        model: "deepseek-v4-flash",
+        temperature: 0.9,
+        maxTokens: 2800,
+        historyTurns: 36,
+        thinkingMode: false,
+        fixedStyle: true
+      };
 
-    function saveMessages() {
-      localStorage.setItem("rp_messages_v3", JSON.stringify(messages.slice(-80)));
-    }
+      const FIXED_STYLE_PROMPT = [
+        "固定文风：以成熟传统出版小说的质感进行沉浸式叙事，段落应饱满、连贯、具备呼吸感，避免由大量零散小短句堆砌而成；短句只能作为极低频的节奏点使用。",
+        "叙事节奏按中长篇推进，舒缓但必须有进展，逻辑清晰，读者应能看懂具体发生了什么。",
+        "人物塑造必须严格遵循用户提供的人设，不擅自修改、添加或偷换人物核心设定；通过动作、神态、心理、语言和潜台词展现人物。",
+        "环境描写要自然融入当前动作与情绪，不要刻意铺陈；时间线保持清晰。",
+        "禁止重复同义表达，必须承接用户给出的线索与当前剧情；可以有轻微幽默与活泼感，但必须符合角色性格。",
+        "除非用户明确要求，不要替用户发言，不要替用户决定动作、心理或立场。"
+      ].join("\n");
 
-    function escapeHtml(text) {
-      return String(text).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
-    }
+      const $ = (id) => document.getElementById(id);
 
-    function render() {
-      setText();
-      chatEl.innerHTML = "";
-      if (!messages.length) {
-        const s = getSettings();
-        chatEl.innerHTML = `
-          <div class="empty">
-            <strong>${s.characterName ? `和 ${escapeHtml(s.characterName)} 开始一段剧情` : "开始你的 RP 剧情"}</strong>
-            <span>先点“角色卡”写设定，再点“设置”填写 APP_TOKEN。</span>
-            <span>也可以直接输入一句开场白测试。</span>
-          </div>`;
-        return;
-      }
-      for (const msg of messages) {
-        addBubble(msg.role, msg.content, false);
-      }
-      chatEl.scrollTop = chatEl.scrollHeight;
-    }
+      const els = {
+        chat: $("chat"),
+        composer: $("composer"),
+        userInput: $("userInput"),
+        sendBtn: $("sendBtn"),
+        continueBtn: $("continueBtn"),
+        regenLastBtn: $("regenLastBtn"),
+        exportBtn: $("exportBtn"),
+        clearBtn: $("clearBtn"),
+        settingsBtn: $("settingsBtn"),
+        characterBtn: $("characterBtn"),
+        status: $("status"),
+        toast: $("toast"),
+        characterTitle: $("characterTitle"),
+        characterDesc: $("characterDesc"),
+        modelPill: $("modelPill"),
+        thinkingPill: $("thinkingPill"),
+        stylePill: $("stylePill"),
+        settingsDialog: $("settingsDialog"),
+        closeSettings: $("closeSettings"),
+        cancelSettings: $("cancelSettings"),
+        saveSettings: $("saveSettings"),
+        testBtn: $("testBtn"),
+        workerUrl: $("workerUrl"),
+        appToken: $("appToken"),
+        modelSelect: $("modelSelect"),
+        temperatureInput: $("temperatureInput"),
+        maxTokensInput: $("maxTokensInput"),
+        historyTurnsInput: $("historyTurnsInput"),
+        thinkingInput: $("thinkingInput"),
+        fixedStyleInput: $("fixedStyleInput"),
+        characterDialog: $("characterDialog"),
+        closeCharacter: $("closeCharacter"),
+        cancelCharacter: $("cancelCharacter"),
+        saveCharacter: $("saveCharacter"),
+        characterNameInput: $("characterNameInput"),
+        playerNameInput: $("playerNameInput"),
+        characterPromptInput: $("characterPromptInput"),
+        scenarioPromptInput: $("scenarioPromptInput"),
+        memoryPromptInput: $("memoryPromptInput")
+      };
 
-    function addBubble(role, content, scroll = true) {
-      const wrap = document.createElement("div");
-      wrap.className = `msg ${role}`;
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = content;
-      wrap.appendChild(bubble);
-      chatEl.appendChild(wrap);
-      if (scroll) chatEl.scrollTop = chatEl.scrollHeight;
-      return wrap;
-    }
-
-    function addNote(text, type = "") {
-      const note = document.createElement("div");
-      note.className = `note ${type}`;
-      note.textContent = text;
-      chatEl.appendChild(note);
-      chatEl.scrollTop = chatEl.scrollHeight;
-      return note;
-    }
-
-    function openOverlay(id) {
-      $(id).classList.add("open");
-      $(id).setAttribute("aria-hidden", "false");
-    }
-    function closeOverlay(id) {
-      $(id).classList.remove("open");
-      $(id).setAttribute("aria-hidden", "true");
-    }
-
-    function fillSettings() {
-      const s = getSettings();
-      $("workerUrl").value = s.workerUrl;
-      $("appToken").value = s.appToken;
-      $("model").value = s.model;
-      $("temperature").value = s.temperature;
-      $("maxTokens").value = s.maxTokens;
-      $("thinking").checked = s.thinking;
-    }
-
-    function fillCharacter() {
-      const s = getSettings();
-      $("characterName").value = s.characterName;
-      $("playerName").value = s.playerName;
-      $("characterPrompt").value = s.characterPrompt;
-      $("scenarioPrompt").value = s.scenarioPrompt;
-      $("memoryPrompt").value = s.memoryPrompt;
-      $("stylePrompt").value = s.stylePrompt;
-    }
-
-    function saveSettingsFromForm() {
-      localStorage.setItem("rp_workerUrl", $("workerUrl").value.trim());
-      localStorage.setItem("rp_appToken", $("appToken").value.trim());
-      localStorage.setItem("rp_model", $("model").value);
-      localStorage.setItem("rp_temperature", String(Number($("temperature").value || DEFAULTS.temperature)));
-      localStorage.setItem("rp_maxTokens", String(Number($("maxTokens").value || DEFAULTS.maxTokens)));
-      localStorage.setItem("rp_thinking", String($("thinking").checked));
-      closeOverlay("settingsOverlay");
-      render();
-    }
-
-    function saveCharacterFromForm() {
-      localStorage.setItem("rp_characterName", $("characterName").value.trim());
-      localStorage.setItem("rp_playerName", $("playerName").value.trim());
-      localStorage.setItem("rp_characterPrompt", $("characterPrompt").value.trim());
-      localStorage.setItem("rp_scenarioPrompt", $("scenarioPrompt").value.trim());
-      localStorage.setItem("rp_memoryPrompt", $("memoryPrompt").value.trim());
-      localStorage.setItem("rp_stylePrompt", $("stylePrompt").value.trim() || DEFAULTS.stylePrompt);
-      closeOverlay("characterOverlay");
-      render();
-    }
-
-    function buildSystemPrompt() {
-      const s = getSettings();
-      return [
-        "你是一个沉浸式角色扮演引擎。",
-        "重要规则：只扮演角色、NPC、环境和旁白；不要替用户发言；不要替用户做决定；保持连续性。",
-        s.characterName ? `你主要扮演的角色名：${s.characterName}` : "",
-        s.playerName ? `用户/玩家称呼：${s.playerName}` : "",
-        s.characterPrompt ? `角色设定：\n${s.characterPrompt}` : "",
-        s.scenarioPrompt ? `场景/世界观：\n${s.scenarioPrompt}` : "",
-        s.memoryPrompt ? `长期记忆：\n${s.memoryPrompt}` : "",
-        s.stylePrompt ? `回复风格：\n${s.stylePrompt}` : ""
-      ].filter(Boolean).join("\n\n");
-    }
-
-    function extractError(data, status) {
-      let detail = data?.detail || data?.error || data?.message || "未知错误";
-      if (typeof detail !== "string") detail = JSON.stringify(detail);
-      try {
-        const parsed = JSON.parse(detail);
-        detail = parsed?.error?.message || parsed?.message || JSON.stringify(parsed);
-      } catch {}
-      return `请求失败：HTTP ${status} · ${detail}`;
-    }
-
-    async function callApi(text) {
-      const s = getSettings();
-      if (!s.workerUrl) throw new Error("请先在设置里填写 Worker 接口地址。格式类似：https://xxx.workers.dev/chat");
-      if (!s.appToken) throw new Error("请先在设置里填写 APP_TOKEN。这个不是 DeepSeek API Key，是你自己设置的网页访问密码。");
-
-      const requestMessages = [
-        { role: "system", content: buildSystemPrompt() },
-        ...messages.slice(-40),
-        { role: "user", content: text }
-      ];
-
-      const res = await fetch(s.workerUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-App-Token": s.appToken
-        },
-        body: JSON.stringify({
-          model: s.model,
-          messages: requestMessages,
-          temperature: s.temperature,
-          max_tokens: Math.max(256, Math.min(4000, s.maxTokens)),
-          thinking: s.thinking
-        })
+      let settings = readJson(STORAGE.settings, DEFAULTS);
+      let profile = readJson(STORAGE.profile, {
+        characterName: "",
+        playerName: "",
+        characterPrompt: "",
+        scenarioPrompt: "",
+        memoryPrompt: ""
       });
+      let messages = readJson(STORAGE.messages, []);
+      let busy = false;
 
-      let data = null;
-      try { data = await res.json(); } catch { data = { error: await res.text() }; }
-      if (!res.ok) throw new Error(extractError(data, res.status));
-      return data?.choices?.[0]?.message?.content || "没有收到有效回复。";
-    }
-
-    async function sendText(text) {
-      const trimmed = text.trim();
-      if (!trimmed) return;
-      if (!messages.length) chatEl.innerHTML = "";
-      messages.push({ role: "user", content: trimmed });
-      saveMessages();
-      addBubble("user", trimmed);
-      userInput.value = "";
-      userInput.style.height = "auto";
-      sendBtn.disabled = true;
-      continueBtn.disabled = true;
-      const note = addNote("正在生成……");
-      try {
-        const reply = await callApi(trimmed);
-        note.remove();
-        messages.push({ role: "assistant", content: reply });
-        saveMessages();
-        addBubble("assistant", reply);
-      } catch (err) {
-        note.textContent = err.message;
-        note.className = "note error";
-      } finally {
-        sendBtn.disabled = false;
-        continueBtn.disabled = false;
-        userInput.focus();
+      function readJson(key, fallback) {
+        try {
+          const value = JSON.parse(localStorage.getItem(key) || "null");
+          return value && typeof value === "object" ? { ...fallback, ...value } : fallback;
+        } catch {
+          return fallback;
+        }
       }
-    }
 
-    async function testConnection() {
-      saveSettingsFromForm();
-      if (!messages.length) chatEl.innerHTML = "";
-      const note = addNote("正在测试连接……");
-      try {
-        const reply = await callApi("只回复两个字：成功");
-        note.textContent = "连接成功：" + reply;
-      } catch (err) {
-        note.textContent = err.message;
-        note.className = "note error";
+      function writeJson(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
       }
-    }
 
-    $("settingsBtn").addEventListener("click", () => { fillSettings(); openOverlay("settingsOverlay"); });
-    $("closeSettings").addEventListener("click", () => closeOverlay("settingsOverlay"));
-    $("saveSettings").addEventListener("click", saveSettingsFromForm);
-    $("testBtn").addEventListener("click", testConnection);
+      function showToast(text, isError = false) {
+        els.toast.textContent = text;
+        els.toast.className = isError ? "toast show err" : "toast show";
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => {
+          els.toast.className = "toast";
+        }, isError ? 5200 : 2600);
+      }
 
-    $("characterBtn").addEventListener("click", () => { fillCharacter(); openOverlay("characterOverlay"); });
-    $("closeCharacter").addEventListener("click", () => closeOverlay("characterOverlay"));
-    $("saveCharacter").addEventListener("click", saveCharacterFromForm);
+      function escapeHtml(text) {
+        return String(text ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
 
-    $("clearBtn").addEventListener("click", () => {
-      if (!confirm("确定清空当前对话吗？角色卡和设置会保留。")) return;
-      messages = [];
-      saveMessages();
+      function openDialog(dialog) {
+        if (dialog.showModal) dialog.showModal();
+        else dialog.setAttribute("open", "");
+      }
+
+      function closeDialog(dialog) {
+        if (dialog.close) dialog.close();
+        else dialog.removeAttribute("open");
+      }
+
+      function getAssistantVariant(message) {
+        if (Array.isArray(message.variants) && message.variants.length) {
+          const index = Number.isInteger(message.current) ? message.current : 0;
+          return message.variants[Math.max(0, Math.min(index, message.variants.length - 1))] || message.variants[0];
+        }
+        return { content: message.content || "", reasoning: message.reasoning || "" };
+      }
+
+      function getMessageContent(message) {
+        if (message.role === "assistant") return getAssistantVariant(message).content || "";
+        return message.content || "";
+      }
+
+      function getMessageReasoning(message) {
+        if (message.role === "assistant") return getAssistantVariant(message).reasoning || "";
+        return "";
+      }
+
+      function normalizeMessages() {
+        messages = Array.isArray(messages) ? messages : [];
+        for (const msg of messages) {
+          if (msg.role === "assistant" && !Array.isArray(msg.variants)) {
+            msg.variants = [{ content: msg.content || "", reasoning: msg.reasoning || "" }];
+            msg.current = 0;
+            delete msg.content;
+            delete msg.reasoning;
+          }
+        }
+      }
+
+      function persistAll() {
+        writeJson(STORAGE.settings, settings);
+        writeJson(STORAGE.profile, profile);
+        writeJson(STORAGE.messages, messages);
+      }
+
+      function updateSummary() {
+        const name = profile.characterName.trim();
+        els.characterTitle.textContent = name || "未设置角色";
+        els.characterDesc.textContent = profile.scenarioPrompt.trim()
+          ? profile.scenarioPrompt.trim().slice(0, 120) + (profile.scenarioPrompt.trim().length > 120 ? "……" : "")
+          : "点「角色卡」写入角色设定、场景和长期记忆。";
+        els.modelPill.textContent = settings.model;
+        els.thinkingPill.textContent = settings.thinkingMode ? "思考：开" : "思考：关";
+        els.stylePill.textContent = settings.fixedStyle ? "固定文风：开" : "固定文风：关";
+      }
+
+      function render() {
+        normalizeMessages();
+        updateSummary();
+        els.chat.innerHTML = "";
+
+        if (!messages.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.innerHTML = `
+            <strong>还没有开始。</strong><br />
+            先点「角色卡」填写人设和场景，再在底部输入你的第一句动作或台词。<br />
+            不满意 AI 回复时，可以点「重新生成」保留多个版本。
+          `;
+          els.chat.appendChild(empty);
+          return;
+        }
+
+        messages.forEach((msg, index) => {
+          const wrap = document.createElement("article");
+          wrap.className = `message ${msg.role}`;
+          const bubble = document.createElement("div");
+          bubble.className = "bubble";
+
+          const content = document.createElement("div");
+          content.className = "content";
+          content.textContent = getMessageContent(msg);
+          bubble.appendChild(content);
+
+          if (msg.role === "assistant") {
+            const reasoning = getMessageReasoning(msg);
+            if (reasoning) {
+              const details = document.createElement("details");
+              details.className = "reasoning";
+              details.innerHTML = `<summary>思考过程</summary><div class="reasoning-body"></div>`;
+              details.querySelector(".reasoning-body").textContent = reasoning;
+              bubble.appendChild(details);
+            }
+
+            const actions = document.createElement("div");
+            actions.className = "msg-actions";
+            const variants = Array.isArray(msg.variants) ? msg.variants : [];
+            const current = Number.isInteger(msg.current) ? msg.current : 0;
+            actions.innerHTML = `
+              <button class="mini" data-action="regen" data-index="${index}">重新生成</button>
+              <button class="mini" data-action="prev" data-index="${index}" ${variants.length <= 1 ? "disabled" : ""}>上一版</button>
+              <button class="mini" data-action="next" data-index="${index}" ${variants.length <= 1 ? "disabled" : ""}>下一版</button>
+              <button class="mini" data-action="copy" data-index="${index}">复制</button>
+              <span class="pill">${variants.length ? current + 1 : 1} / ${Math.max(variants.length, 1)}</span>
+            `;
+            bubble.appendChild(actions);
+          }
+
+          wrap.appendChild(bubble);
+          els.chat.appendChild(wrap);
+        });
+
+        els.chat.scrollTop = els.chat.scrollHeight;
+      }
+
+      function setBusy(next) {
+        busy = next;
+        els.sendBtn.disabled = next;
+        els.continueBtn.disabled = next;
+        els.regenLastBtn.disabled = next;
+        els.testBtn.disabled = next;
+        if (next) setStatus("请求中……", "");
+      }
+
+      function setStatus(text, kind = "") {
+        els.status.textContent = text;
+        els.status.className = `status ${kind}`.trim();
+      }
+
+      function buildSystemPrompt() {
+        const parts = [
+          "你是一个沉浸式角色扮演引擎。请严格遵循用户提供的角色卡、场景、长期记忆和历史对话。",
+          "重要规则：只扮演角色、NPC、环境和旁白；不要替用户发言，不要替用户决定动作、心理或立场；不要跳出角色解释规则。"
+        ];
+
+        if (settings.fixedStyle) parts.push(FIXED_STYLE_PROMPT);
+        if (profile.playerName.trim()) parts.push(`用户/玩家称呼：${profile.playerName.trim()}`);
+        if (profile.characterName.trim()) parts.push(`主要角色名：${profile.characterName.trim()}`);
+        if (profile.characterPrompt.trim()) parts.push(`角色设定：\n${profile.characterPrompt.trim()}`);
+        if (profile.scenarioPrompt.trim()) parts.push(`场景设定：\n${profile.scenarioPrompt.trim()}`);
+        if (profile.memoryPrompt.trim()) parts.push(`长期记忆：\n${profile.memoryPrompt.trim()}`);
+
+        return parts.join("\n\n");
+      }
+
+      function buildRequestMessages(cutoffIndex = messages.length - 1) {
+        const request = [{ role: "system", content: buildSystemPrompt() }];
+        const safeCutoff = Math.max(-1, Math.min(cutoffIndex, messages.length - 1));
+        const history = messages.slice(0, safeCutoff + 1);
+        const maxMessages = Math.max(4, Number(settings.historyTurns || 36));
+        const clipped = history.slice(-maxMessages);
+        for (const msg of clipped) {
+          if (msg.role !== "user" && msg.role !== "assistant") continue;
+          const content = getMessageContent(msg).trim();
+          if (!content) continue;
+          request.push({ role: msg.role, content });
+        }
+        return request;
+      }
+
+      async function callWorker(cutoffIndex) {
+        if (!settings.workerUrl || !settings.workerUrl.includes("/chat")) {
+          throw new Error("请先在设置里填写正确的 Worker 接口地址，格式类似：https://xxx.workers.dev/chat");
+        }
+        if (!settings.appToken) {
+          throw new Error("请先在设置里填写 APP_TOKEN。注意：它不是 DeepSeek API Key，而是你自己给网页设置的访问密码。");
+        }
+
+        const body = {
+          model: settings.model,
+          messages: buildRequestMessages(cutoffIndex),
+          temperature: Number(settings.temperature || 0.9),
+          max_tokens: Number(settings.maxTokens || 2800),
+          thinking: Boolean(settings.thinkingMode)
+        };
+
+        let response;
+        try {
+          response = await fetch(settings.workerUrl.trim(), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-App-Token": settings.appToken.trim()
+            },
+            body: JSON.stringify(body)
+          });
+        } catch (error) {
+          throw new Error(`无法连接 Worker：${error.message}`);
+        }
+
+        const raw = await response.text();
+        let data;
+        try { data = JSON.parse(raw); }
+        catch { data = { error: raw || response.statusText }; }
+
+        if (!response.ok) {
+          throw new Error(extractErrorMessage(data, response.status));
+        }
+
+        const message = data?.choices?.[0]?.message || data?.message || {};
+        const content = stringifyMaybe(
+          message.content ?? data.output_text ?? data.content ?? ""
+        ).trim();
+        const reasoning = stringifyMaybe(
+          message.reasoning_content ?? message.reasoning ?? data.reasoning_content ?? ""
+        ).trim();
+
+        if (!content) {
+          throw new Error("API 请求成功，但没有拿到可显示的回复内容。可以尝试关闭思考模式或减少上下文长度。");
+        }
+
+        return { content, reasoning, createdAt: new Date().toISOString() };
+      }
+
+      function stringifyMaybe(value) {
+        if (typeof value === "string") return value;
+        if (value == null) return "";
+        try { return JSON.stringify(value, null, 2); }
+        catch { return String(value); }
+      }
+
+      function extractErrorMessage(data, status) {
+        let detail = data?.detail ?? data?.error ?? data?.message ?? data;
+        if (typeof detail === "string") {
+          try {
+            const parsed = JSON.parse(detail);
+            detail = parsed?.error?.message || parsed?.message || parsed?.error || detail;
+          } catch {}
+        } else if (detail && typeof detail === "object") {
+          detail = detail?.message || detail?.error?.message || JSON.stringify(detail);
+        }
+        return `请求失败：HTTP ${status} · ${detail || "未知错误"}`;
+      }
+
+      function addSystemNote(text) {
+        messages.push({ role: "system", content: text, createdAt: new Date().toISOString() });
+        render();
+      }
+
+      async function sendUserText(text) {
+        const trimmed = text.trim();
+        if (!trimmed || busy) return;
+        messages.push({ role: "user", content: trimmed, createdAt: new Date().toISOString() });
+        persistAll();
+        render();
+        els.userInput.value = "";
+        els.userInput.style.height = "auto";
+
+        const noteIndex = messages.length;
+        messages.push({ role: "system", content: "正在生成……", createdAt: new Date().toISOString() });
+        render();
+
+        setBusy(true);
+        try {
+          const result = await callWorker(noteIndex - 1);
+          messages.splice(noteIndex, 1, {
+            role: "assistant",
+            variants: [result],
+            current: 0,
+            createdAt: new Date().toISOString()
+          });
+          setStatus("连接正常", "ok");
+          persistAll();
+          render();
+        } catch (error) {
+          messages.splice(noteIndex, 1);
+          persistAll();
+          render();
+          setStatus("请求失败", "err");
+          showToast(error.message, true);
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function findLastAssistantIndex() {
+        for (let i = messages.length - 1; i >= 0; i--) {
+          if (messages[i].role === "assistant") return i;
+        }
+        return -1;
+      }
+
+      function findPrevUserIndex(fromIndex) {
+        for (let i = fromIndex - 1; i >= 0; i--) {
+          if (messages[i].role === "user") return i;
+        }
+        return -1;
+      }
+
+      async function regenerate(index) {
+        if (busy) return;
+        const msg = messages[index];
+        if (!msg || msg.role !== "assistant") {
+          showToast("没有可重新生成的 AI 回复。", true);
+          return;
+        }
+        const userIndex = findPrevUserIndex(index);
+        if (userIndex < 0) {
+          showToast("找不到对应的上一条用户输入，无法重新生成。", true);
+          return;
+        }
+
+        setBusy(true);
+        showToast("正在重新生成……");
+        try {
+          const result = await callWorker(userIndex);
+          if (!Array.isArray(msg.variants)) msg.variants = [{ content: msg.content || "", reasoning: msg.reasoning || "" }];
+          msg.variants.push(result);
+          msg.current = msg.variants.length - 1;
+          delete msg.content;
+          delete msg.reasoning;
+          setStatus("重新生成成功", "ok");
+          persistAll();
+          render();
+        } catch (error) {
+          setStatus("请求失败", "err");
+          showToast(error.message, true);
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function switchVariant(index, direction) {
+        const msg = messages[index];
+        if (!msg || msg.role !== "assistant" || !Array.isArray(msg.variants) || msg.variants.length <= 1) return;
+        const current = Number.isInteger(msg.current) ? msg.current : 0;
+        msg.current = (current + direction + msg.variants.length) % msg.variants.length;
+        persistAll();
+        render();
+      }
+
+      async function copyMessage(index) {
+        const msg = messages[index];
+        if (!msg) return;
+        const text = getMessageContent(msg);
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast("已复制。")
+        } catch {
+          showToast("复制失败，可以手动选中文字复制。", true);
+        }
+      }
+
+      function fillSettingsDialog() {
+        els.workerUrl.value = settings.workerUrl || DEFAULTS.workerUrl;
+        els.appToken.value = settings.appToken || "";
+        els.modelSelect.value = settings.model || DEFAULTS.model;
+        els.temperatureInput.value = settings.temperature ?? DEFAULTS.temperature;
+        els.maxTokensInput.value = settings.maxTokens ?? DEFAULTS.maxTokens;
+        els.historyTurnsInput.value = settings.historyTurns ?? DEFAULTS.historyTurns;
+        els.thinkingInput.checked = Boolean(settings.thinkingMode);
+        els.fixedStyleInput.checked = settings.fixedStyle !== false;
+      }
+
+      function saveSettingsFromDialog() {
+        settings = {
+          workerUrl: els.workerUrl.value.trim() || DEFAULTS.workerUrl,
+          appToken: els.appToken.value.trim(),
+          model: els.modelSelect.value,
+          temperature: Number(els.temperatureInput.value || DEFAULTS.temperature),
+          maxTokens: Number(els.maxTokensInput.value || DEFAULTS.maxTokens),
+          historyTurns: Number(els.historyTurnsInput.value || DEFAULTS.historyTurns),
+          thinkingMode: els.thinkingInput.checked,
+          fixedStyle: els.fixedStyleInput.checked
+        };
+        persistAll();
+        updateSummary();
+        closeDialog(els.settingsDialog);
+        showToast("设置已保存。")
+      }
+
+      function fillCharacterDialog() {
+        els.characterNameInput.value = profile.characterName || "";
+        els.playerNameInput.value = profile.playerName || "";
+        els.characterPromptInput.value = profile.characterPrompt || "";
+        els.scenarioPromptInput.value = profile.scenarioPrompt || "";
+        els.memoryPromptInput.value = profile.memoryPrompt || "";
+      }
+
+      function saveCharacterFromDialog() {
+        profile = {
+          characterName: els.characterNameInput.value.trim(),
+          playerName: els.playerNameInput.value.trim(),
+          characterPrompt: els.characterPromptInput.value.trim(),
+          scenarioPrompt: els.scenarioPromptInput.value.trim(),
+          memoryPrompt: els.memoryPromptInput.value.trim()
+        };
+        persistAll();
+        updateSummary();
+        closeDialog(els.characterDialog);
+        showToast("角色卡已保存。")
+      }
+
+      async function testConnection() {
+        if (busy) return;
+        saveSettingsFromDialog();
+        messages.push({ role: "user", content: "连接测试：请只回复“连接成功”。", createdAt: new Date().toISOString() });
+        const testIndex = messages.length - 1;
+        setBusy(true);
+        try {
+          await callWorker(testIndex);
+          messages.pop();
+          setStatus("连接正常", "ok");
+          persistAll();
+          render();
+          showToast("连接成功。")
+        } catch (error) {
+          messages.pop();
+          setStatus("请求失败", "err");
+          persistAll();
+          render();
+          showToast(error.message, true);
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function exportSave() {
+        const payload = {
+          app: "Lily RP v4",
+          version: APP_VERSION,
+          exportedAt: new Date().toISOString(),
+          settings: { ...settings, appToken: "" },
+          profile,
+          messages
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `lily-rp-save-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function clearMessages() {
+        if (!messages.length) return;
+        if (!confirm("确定清空当前聊天记录吗？角色卡和设置会保留。")) return;
+        messages = [];
+        persistAll();
+        render();
+        showToast("聊天记录已清空。")
+      }
+
+      async function unregisterOldServiceWorkers() {
+        try {
+          if ("serviceWorker" in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            for (const reg of regs) await reg.unregister();
+          }
+          if ("caches" in window) {
+            const keys = await caches.keys();
+            for (const key of keys) await caches.delete(key);
+          }
+        } catch {}
+      }
+
+      function bindEvents() {
+        els.composer.addEventListener("submit", (event) => {
+          event.preventDefault();
+          sendUserText(els.userInput.value);
+        });
+
+        els.userInput.addEventListener("input", () => {
+          els.userInput.style.height = "auto";
+          els.userInput.style.height = Math.min(180, els.userInput.scrollHeight) + "px";
+        });
+
+        els.continueBtn.addEventListener("click", () => {
+          sendUserText("请根据当前角色、场景与上一段剧情自然续写。不要替用户发言，不要替用户做决定，但可以让角色、环境或 NPC 主动推进情节。");
+        });
+
+        els.regenLastBtn.addEventListener("click", () => {
+          const index = findLastAssistantIndex();
+          if (index < 0) showToast("还没有可重新生成的 AI 回复。", true);
+          else regenerate(index);
+        });
+
+        els.exportBtn.addEventListener("click", exportSave);
+        els.clearBtn.addEventListener("click", clearMessages);
+
+        els.settingsBtn.addEventListener("click", () => {
+          fillSettingsDialog();
+          openDialog(els.settingsDialog);
+        });
+        els.closeSettings.addEventListener("click", () => closeDialog(els.settingsDialog));
+        els.cancelSettings.addEventListener("click", () => closeDialog(els.settingsDialog));
+        els.saveSettings.addEventListener("click", saveSettingsFromDialog);
+        els.testBtn.addEventListener("click", testConnection);
+
+        els.characterBtn.addEventListener("click", () => {
+          fillCharacterDialog();
+          openDialog(els.characterDialog);
+        });
+        els.closeCharacter.addEventListener("click", () => closeDialog(els.characterDialog));
+        els.cancelCharacter.addEventListener("click", () => closeDialog(els.characterDialog));
+        els.saveCharacter.addEventListener("click", saveCharacterFromDialog);
+
+        els.chat.addEventListener("click", (event) => {
+          const btn = event.target.closest("button[data-action]");
+          if (!btn) return;
+          const index = Number(btn.dataset.index);
+          const action = btn.dataset.action;
+          if (action === "regen") regenerate(index);
+          if (action === "prev") switchVariant(index, -1);
+          if (action === "next") switchVariant(index, 1);
+          if (action === "copy") copyMessage(index);
+        });
+      }
+
+      unregisterOldServiceWorkers();
+      normalizeMessages();
+      bindEvents();
       render();
-    });
-
-    $("exportBtn").addEventListener("click", () => {
-      const data = { settings: getSettings(), messages, exportedAt: new Date().toISOString() };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `rp-save-${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    composer.addEventListener("submit", (e) => {
-      e.preventDefault();
-      sendText(userInput.value);
-    });
-    continueBtn.addEventListener("click", () => sendText("请根据当前场景自然继续剧情。不要替我发言。"));
-    userInput.addEventListener("input", () => {
-      userInput.style.height = "auto";
-      userInput.style.height = `${Math.min(userInput.scrollHeight, 180)}px`;
-    });
-    userInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendText(userInput.value);
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closeOverlay("settingsOverlay");
-        closeOverlay("characterOverlay");
-      }
-    });
-
-    render();
+      setStatus("准备就绪", "ok");
+    })();
   </script>
 </body>
 </html>
