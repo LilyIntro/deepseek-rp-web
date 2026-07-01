@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lily RP v6.11 Novel Editor Memory</title>
+  <title>Lily RP v6.12 Collapse Actions</title>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Lily RP" />
@@ -71,7 +71,13 @@
     .assistant .bubble { border-bottom-left-radius: 6px; }
     .system .bubble { background: var(--card); color: var(--muted); max-width: 88%; text-align: center; font-size: 14px; box-shadow: none; }
     .content { white-space: pre-wrap; }
-    .msg-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+     .msg-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+    details.action-details { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+    details.action-details summary { cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 700; list-style: none; user-select: none; }
+    details.action-details summary::-webkit-details-marker { display: none; }
+    details.action-details summary::before { content: "▸"; margin-right: 6px; }
+    details.action-details[open] summary::before { content: "▾"; }
+    details.action-details .msg-actions { margin-top: 8px; padding-top: 0; border-top: 0; }
     details.reasoning { margin-top: 11px; border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--line)); background: var(--soft); border-radius: 12px; padding: 9px 11px; }
     details.reasoning summary { cursor: pointer; color: var(--primary); font-weight: 700; font-size: 13px; }
     .reasoning-body { margin-top: 8px; color: var(--text); font-size: 13px; white-space: pre-wrap; max-height: 260px; overflow: auto; }
@@ -161,7 +167,7 @@
   <div class="app">
     <header class="header">
       <div class="header-inner">
-        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6.11</h1><p id="subtitle">编辑对话 · 人物变化 · 记忆压缩 · 不自动淡出续写</p></div></div>
+        <div class="brand"><div class="logo">L</div><div><h1>Lily RP v6.12</h1><p id="subtitle">可折叠操作栏 · 禁止编辑 AI 回复 · 冗余清理</p></div></div>
         <div class="mobile-actions">
           <button id="mobileSideBtn" type="button">侧栏</button>
           <button id="mobileMenuBtn" type="button">菜单</button>
@@ -239,6 +245,7 @@
     <div class="grid2"><label>Temperature<input id="temperatureInput" type="number" min="0" max="2" step="0.1" /></label><label>Max Tokens<input id="maxTokensInput" type="number" min="256" max="4000" step="100" /></label></div>
     <label class="checkline"><input id="thinkingInput" type="checkbox" /><span>开启思考模式，并在回复下方显示可折叠「思考过程」。</span></label>
     <label class="checkline"><input id="fixedCoreInput" type="checkbox" /><span>使用内置固定核心规则。</span></label>
+    <label class="checkline"><input id="collapseActionsInput" type="checkbox" /><span>折叠每条消息下方的编辑/操作栏，减少对话区占用。</span></label>
     <div class="dialog-actions"><button id="testBtn" type="button">测试连接</button><button id="cancelSettings" type="button">取消</button><button id="saveSettings" type="button" class="primary">保存</button></div>
   </div></dialog>
 
@@ -291,11 +298,10 @@
   </div></dialog>
 
   <dialog id="controlsDialog"><div class="dialog-card"><div class="dialog-head"><h2>回复控制面板</h2><button id="closeControls" type="button">×</button></div>
-    <div class="hint">v6.11 调整为不自动淡出续写：成人内容作为允许项自然出现；已进入同一成人场景时，续写会从上一处继续，不主动跳到事后或转场。</div>
+    <div class="hint">v6.12：保留不自动淡出续写，并新增可折叠消息操作栏；AI 回复不再支持直接编辑，请使用重新生成或复制。</div>
     <div class="grid2"><label>回复长度<select id="ctrlLength"><option>短</option><option>中</option><option>长</option><option>超长</option></select></label><label>剧情推进<select id="ctrlPace"><option>慢热</option><option>正常</option><option>积极推进</option></select></label></div>
     <div class="grid2"><label>对白比例<select id="ctrlDialogue"><option>少对白</option><option>平衡</option><option>多对白</option></select></label><label>描写密度<select id="ctrlDetail"><option>轻描写</option><option>标准</option><option>细腻</option></select></label></div>
     <div class="grid2"><label>角色主动性<select id="ctrlInitiative"><option>被动回应</option><option>适度主动</option><option>强主动</option></select></label><label>情感复杂度<select id="ctrlEmotion"><option>克制</option><option>暧昧</option><option>高张力</option><option>危险关系</option></select></label></div>
-    <div class="hidden"><select id="ctrlIntimacyLevel"><option>关闭</option><option>暧昧</option><option>明示</option><option>露骨</option><option>淡出</option></select><select id="ctrlIntimacyInitiative"><option>保守</option><option>适度主动</option><option>强主动</option></select><select id="ctrlDarkRomanceMode"><option>关闭</option><option>轻度</option><option>中度</option><option>高压</option></select><select id="ctrlIntimacyBoundary"><option>明确自愿</option><option>CNC / 事前同意幻想</option><option>高压时淡出</option><option>只写事后影响</option></select><select id="ctrlDiscomfortSource"><option>情感操控</option><option>权力压迫</option><option>病态占有</option><option>隔离与依赖</option><option>嫉妒与报复</option></select></div>
     <div class="grid2"><label>冲突强度<select id="ctrlConflict"><option>低</option><option>中</option><option>高</option></select></label><label>结尾方式<select id="ctrlEnding"><option>自然停顿</option><option>抛出问题</option><option>留下选择</option><option>推进事件</option></select></label></div>
     <label>本窗口额外回复要求<textarea id="ctrlExtra" rows="4" placeholder="仅当前窗口生效，比如：更强势一些，少询问，多用行动推进；不要把黑暗关系写成普通暧昧。"></textarea></label>
     <div class="dialog-actions"><button id="resetControlsBtn" type="button">恢复默认</button><button id="cancelControls" type="button">取消</button><button id="saveControlsBtn" type="button" class="primary">保存调参</button></div>
@@ -307,15 +313,15 @@
   <script>
     (() => {
       "use strict";
-      const APP_VERSION = "v6.9.0";
+      const APP_VERSION = "v6.12.0";
       const STORAGE = { settings: "lily_rp_v6_settings", sessions: "lily_rp_v6_sessions", characters: "lily_rp_v6_characters", lore: "lily_rp_v6_lore", lastSession: "lily_rp_v6_last_session" };
       const V5 = { settings: "lily_rp_v5_settings", sessions: "lily_rp_v5_sessions", migrated: "lily_rp_v6_migrated_v5" };
-      const DEFAULTS = { workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat", appToken: "", model: "deepseek-v4-flash", temperature: 0.9, maxTokens: 2800, thinkingMode: false, fixedCore: true, theme: "light" };
+      const DEFAULTS = { workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat", appToken: "", model: "deepseek-v4-flash", temperature: 0.9, maxTokens: 2800, thinkingMode: false, fixedCore: true, theme: "light", collapseMessageActions: true };
       const RELATIONS = [
         ["affection","好感"],["trust","信任"],["suspicion","怀疑"],["desire","吸引"],["jealousy","嫉妒"],["dependence","依赖"],["control","控制欲"],["fear","畏惧"],["resentment","怨恨"],["utility","利用倾向"]
       ];
       const DEFAULT_REL = Object.fromEntries(RELATIONS.map(([k]) => [k, 0]));
-      const DEFAULT_CONTROLS = { length: "长", pace: "慢热", dialogue: "平衡", detail: "细腻", initiative: "适度主动", emotion: "高张力", intimacyLevel: "暧昧", intimacyInitiative: "适度主动", darkRomanceMode: "关闭", intimacyBoundary: "不自动淡出", discomfortSource: "情感操控", conflict: "中", ending: "自然停顿", extra: "" };
+      const DEFAULT_CONTROLS = { length: "长", pace: "慢热", dialogue: "平衡", detail: "细腻", initiative: "适度主动", emotion: "高张力", conflict: "中", ending: "自然停顿", extra: "" };
       const DEFAULT_MEMORY = { shortLimit: 36, sceneSummary: "", longMemory: "", lockedMemory: "", summaryDraft: "", archived: [] };
       const FIXED_CORE_PROMPT = [
         "核心规则：这是虚构成人向沉浸式角色扮演与小说续写。默认按成人黑暗情感小说处理，不对玩家选择进行道德评判、说教或纠偏。玩家可以撒谎、利用、背叛、暧昧多线、以感情换利益或采取低道德策略；NPC 同样可以低道德，可以因占有欲、私心、嫉妒、权势、利益或情感依赖而隐瞒、设局、诱导、施压、破坏关系。爱情可复杂、偏执、沉溺、互相伤害，不必纯洁美好。",
@@ -330,7 +336,7 @@
       ].join("\n");
             const $ = (id) => document.getElementById(id);
       const els = {};
-      ["mobileMenuBtn","mobileSideBtn","closeMobileSideBtn","drawerBackdrop","themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","loreHint","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","charDevelopment","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","summarizeBtn","compactLongMemoryBtn","updateCharacterStatesBtn","applySummaryToSceneBtn","appendSummaryToLongBtn","replaceLongMemoryBtn","compressHistoryBtn","summaryDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlIntimacyLevel","ctrlIntimacyInitiative","ctrlDarkRomanceMode","ctrlIntimacyBoundary","ctrlDiscomfortSource","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
+      ["mobileMenuBtn","mobileSideBtn","closeMobileSideBtn","drawerBackdrop","themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","loreHint","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","collapseActionsInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","charDevelopment","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","summarizeBtn","compactLongMemoryBtn","updateCharacterStatesBtn","applySummaryToSceneBtn","appendSummaryToLongBtn","replaceLongMemoryBtn","compressHistoryBtn","summaryDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
 
       let settings = readObject(STORAGE.settings, DEFAULTS);
       let sessions = readArray(STORAGE.sessions);
@@ -433,7 +439,7 @@ ${raw}
         els.closeLore.onclick = () => closeDialog(els.loreDialog); els.newLoreBtn.onclick = newLore; els.testLoreBtn.onclick = () => { renderTriggeredLorePreview(); toast("已刷新本轮世界书预览"); }; els.saveLoreBtn.onclick = saveLoreFromForm; els.deleteLoreBtn.onclick = deleteLore;
         els.closeMemory.onclick = els.cancelMemory.onclick = () => closeDialog(els.memoryDialog); els.saveMemoryBtn.onclick = saveMemoryFromForm; els.summarizeBtn.onclick = summarizeRecent; els.compactLongMemoryBtn.onclick = compactLongMemory; els.updateCharacterStatesBtn.onclick = extractCharacterChanges; els.applySummaryToSceneBtn.onclick = () => { els.sceneSummaryInput.value = els.summaryDraftInput.value.trim(); toast("已应用到场景摘要，记得保存"); }; els.appendSummaryToLongBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = [els.longMemoryInput.value.trim(), draft].filter(Boolean).join("\n\n"); toast("已追加到长期记忆，记得保存"); }; els.replaceLongMemoryBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = draft; toast("已用草稿替换长期记忆，记得保存"); }; els.compressHistoryBtn.onclick = compressHistory;
         els.closeControls.onclick = els.cancelControls.onclick = () => closeDialog(els.controlsDialog); els.saveControlsBtn.onclick = saveControlsFromForm; els.resetControlsBtn.onclick = () => fillControlsForm({ ...DEFAULT_CONTROLS });
-        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6-9", "_blank");
+        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6-12", "_blank");
         els.exportBtn.onclick = exportAll; els.importBtn.onclick = () => els.importFile.click(); els.importFile.onchange = importAll;
         els.clearBtn.onclick = clearChat;
         els.sessionList.onclick = e => { const btn = e.target.closest("button[data-session]"); if (btn) switchSession(btn.dataset.session); };
@@ -486,7 +492,6 @@ ${raw}
 
           const actions = document.createElement("div");
           actions.className = "msg-actions";
-          actions.append(actionBtn("编辑", "edit", idx));
           if (m.role === "assistant") {
             actions.append(actionBtn("重新生成", "regen", idx), actionBtn("上一版", "prev", idx), actionBtn("下一版", "next", idx), actionBtn("复制", "copy", idx));
             const ver = document.createElement("span");
@@ -495,26 +500,29 @@ ${raw}
             ver.textContent = `${(m.currentVersion || 0) + 1}/${total}`;
             actions.appendChild(ver);
           } else if (m.role === "user") {
-            actions.append(actionBtn("从这里重写", "rewrite-from", idx), actionBtn("复制", "copy", idx));
+            actions.append(actionBtn("编辑", "edit", idx), actionBtn("从这里重写", "rewrite-from", idx), actionBtn("复制", "copy", idx));
+          } else {
+            actions.append(actionBtn("复制", "copy", idx));
           }
-          bubble.appendChild(actions);
+          appendMessageActions(bubble, actions);
           wrap.appendChild(bubble);
           els.chat.appendChild(wrap);
         });
         els.chat.scrollTop = els.chat.scrollHeight;
       }
       function actionBtn(text, action, index) { const b = document.createElement("button"); b.type = "button"; b.className = "mini"; b.dataset.action = action; b.dataset.index = String(index); b.textContent = text; return b; }
+      function appendMessageActions(bubble, actions) { if (settings.collapseMessageActions === false) { bubble.appendChild(actions); return; } const det = document.createElement("details"); det.className = "action-details"; const sum = document.createElement("summary"); sum.textContent = "编辑 / 操作"; det.append(sum, actions); bubble.appendChild(det); }
       function renderTriggeredLorePreview() { if (!els.triggeredLoreList) return; const triggered = selectTriggeredLore("", true); els.triggeredLoreList.innerHTML = ""; if (!triggered.length) { if (els.loreHint) els.loreHint.textContent = "当前没有触发世界书。常驻项或关键词命中后会出现在这里。"; return; } if (els.loreHint) els.loreHint.textContent = `预计触发 ${triggered.length} 条：`; triggered.forEach(l => { const d = document.createElement("div"); d.className = "pill"; d.textContent = `${l.title} · ${l.priority}`; els.triggeredLoreList.appendChild(d); }); }
 
       function switchSession(id) { if (!sessions.some(s => s.id === id)) return; currentSessionId = id; saveAll(); renderAll(); }
-      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6-9", "_blank"); }
+      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6-12", "_blank"); }
       function copyCurrentSession() { const cur = currentSession(); const copy = JSON.parse(JSON.stringify(cur)); copy.id = uid("win"); copy.title = (cur.title || "窗口") + " · 副本"; copy.createdAt = nowIso(); copy.updatedAt = nowIso(); sessions.unshift(copy); currentSessionId = copy.id; saveAll(); renderAll(); toast("已复制当前窗口"); }
       function renameCurrentSession() { const cur = currentSession(); const name = prompt("窗口名：", cur.title || ""); if (!name) return; cur.title = name.trim(); cur.updatedAt = nowIso(); saveAll(); renderAll(); }
       function deleteCurrentSession() { if (sessions.length <= 1) return toast("至少保留一个窗口", "err"); if (!confirm("确定删除当前窗口？聊天记录会一起删除。")) return; sessions = sessions.filter(s => s.id !== currentSessionId); currentSessionId = sessions[0].id; saveAll(); renderAll(); }
       function clearChat() { if (!confirm("清空当前窗口聊天记录？角色库、世界书和记忆不会删除。")) return; currentSession().messages = []; currentSession().updatedAt = nowIso(); saveAll(); renderAll(); }
 
-      function openSettings() { els.workerUrl.value = settings.workerUrl; els.appToken.value = settings.appToken; els.modelSelect.value = settings.model; els.themeSelect.value = settings.theme; els.temperatureInput.value = settings.temperature; els.maxTokensInput.value = settings.maxTokens; els.thinkingInput.checked = !!settings.thinkingMode; els.fixedCoreInput.checked = !!settings.fixedCore; openDialog(els.settingsDialog); }
-      function saveSettingsFromForm() { settings.workerUrl = els.workerUrl.value.trim(); settings.appToken = els.appToken.value.trim(); settings.model = els.modelSelect.value; settings.theme = els.themeSelect.value; settings.temperature = clampNum(els.temperatureInput.value, 0, 2, 0.9); settings.maxTokens = Math.round(clampNum(els.maxTokensInput.value, 256, 4000, 2800)); settings.thinkingMode = els.thinkingInput.checked; settings.fixedCore = els.fixedCoreInput.checked; saveAll(); applyTheme(); closeDialog(els.settingsDialog); renderAll(); toast("设置已保存"); }
+      function openSettings() { els.workerUrl.value = settings.workerUrl; els.appToken.value = settings.appToken; els.modelSelect.value = settings.model; els.themeSelect.value = settings.theme; els.temperatureInput.value = settings.temperature; els.maxTokensInput.value = settings.maxTokens; els.thinkingInput.checked = !!settings.thinkingMode; els.fixedCoreInput.checked = !!settings.fixedCore; els.collapseActionsInput.checked = settings.collapseMessageActions !== false; openDialog(els.settingsDialog); }
+      function saveSettingsFromForm() { settings.workerUrl = els.workerUrl.value.trim(); settings.appToken = els.appToken.value.trim(); settings.model = els.modelSelect.value; settings.theme = els.themeSelect.value; settings.temperature = clampNum(els.temperatureInput.value, 0, 2, 0.9); settings.maxTokens = Math.round(clampNum(els.maxTokensInput.value, 256, 4000, 2800)); settings.thinkingMode = els.thinkingInput.checked; settings.fixedCore = els.fixedCoreInput.checked; settings.collapseMessageActions = els.collapseActionsInput.checked; saveAll(); applyTheme(); closeDialog(els.settingsDialog); renderAll(); toast("设置已保存"); }
       async function testConnection() { saveSettingsFromForm(); try { setBusy(true); const data = await callDeepSeek([{ role: "user", content: "请只回复：连接成功" }], { maxTokens: 80 }); const text = parseReply(data).content || "连接成功"; els.status.textContent = text.slice(0, 120); els.status.title = text; els.status.className = "status ok"; toast("连接成功"); } catch (err) { const msg = readableError(err); els.status.textContent = "连接失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); } finally { setBusy(false); } }
       function clampNum(v,min,max,fallback) { const n = Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback; }
 
@@ -608,8 +616,8 @@ ${raw}
       async function compressHistory() { const s = currentSession(); if (s.messages.length < 24) return toast("当前聊天不长，暂时不用压缩", "err"); if (!confirm("会把较早聊天总结进草稿，并只保留最近的短期消息。继续？")) return; await summarizeRecent(); const keep = Math.max(8, Number(s.memory.shortLimit || 36)); if (s.messages.length > keep) { s.messages = s.messages.slice(-keep); s.updatedAt = nowIso(); saveAll(); renderAll(); toast("已保留最近短期消息；摘要草稿请检查后保存到长期记忆"); } }
 
       function openControls() { fillControlsForm(currentSession().controls); openDialog(els.controlsDialog); }
-      function fillControlsForm(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; els.ctrlLength.value = c.length; els.ctrlPace.value = c.pace; els.ctrlDialogue.value = c.dialogue; els.ctrlDetail.value = c.detail; els.ctrlInitiative.value = c.initiative; els.ctrlEmotion.value = c.emotion; els.ctrlIntimacyLevel.value = c.intimacyLevel || DEFAULT_CONTROLS.intimacyLevel; els.ctrlIntimacyInitiative.value = c.intimacyInitiative || DEFAULT_CONTROLS.intimacyInitiative; els.ctrlDarkRomanceMode.value = c.darkRomanceMode || DEFAULT_CONTROLS.darkRomanceMode; els.ctrlIntimacyBoundary.value = c.intimacyBoundary || DEFAULT_CONTROLS.intimacyBoundary; els.ctrlDiscomfortSource.value = c.discomfortSource || DEFAULT_CONTROLS.discomfortSource; els.ctrlConflict.value = c.conflict; els.ctrlEnding.value = c.ending; els.ctrlExtra.value = c.extra || ""; }
-      function saveControlsFromForm() { const s = currentSession(); s.controls = { length: els.ctrlLength.value, pace: els.ctrlPace.value, dialogue: els.ctrlDialogue.value, detail: els.ctrlDetail.value, initiative: els.ctrlInitiative.value, emotion: els.ctrlEmotion.value, intimacyLevel: els.ctrlIntimacyLevel.value, intimacyInitiative: els.ctrlIntimacyInitiative.value, darkRomanceMode: els.ctrlDarkRomanceMode.value, intimacyBoundary: els.ctrlIntimacyBoundary.value, discomfortSource: els.ctrlDiscomfortSource.value, conflict: els.ctrlConflict.value, ending: els.ctrlEnding.value, extra: els.ctrlExtra.value.trim() }; s.updatedAt = nowIso(); saveAll(); closeDialog(els.controlsDialog); renderAll(); toast("回复调参已保存"); }
+      function fillControlsForm(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; els.ctrlLength.value = c.length; els.ctrlPace.value = c.pace; els.ctrlDialogue.value = c.dialogue; els.ctrlDetail.value = c.detail; els.ctrlInitiative.value = c.initiative; els.ctrlEmotion.value = c.emotion; els.ctrlConflict.value = c.conflict; els.ctrlEnding.value = c.ending; els.ctrlExtra.value = c.extra || ""; }
+      function saveControlsFromForm() { const s = currentSession(); s.controls = { length: els.ctrlLength.value, pace: els.ctrlPace.value, dialogue: els.ctrlDialogue.value, detail: els.ctrlDetail.value, initiative: els.ctrlInitiative.value, emotion: els.ctrlEmotion.value, conflict: els.ctrlConflict.value, ending: els.ctrlEnding.value, extra: els.ctrlExtra.value.trim() }; s.updatedAt = nowIso(); saveAll(); closeDialog(els.controlsDialog); renderAll(); toast("回复调参已保存"); }
       function controlsSummary(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; return `${c.length}/${c.pace}/${c.emotion}/${c.conflict}`; }
 
       function ensureReadyForApi() {
@@ -707,7 +715,7 @@ ${raw}
         if (!m) return;
         const action = b.dataset.action;
         if (action === "copy") return copyText(selectedContent(m));
-        if (action === "edit") return editMessageAt(idx);
+        if (action === "edit") { if (m.role !== "user") return toast("AI 回复不支持编辑，可用重新生成或复制后另存。", "err"); return editMessageAt(idx); }
         if (action === "rewrite-from") return rewriteFrom(idx);
         if (m.role !== "assistant") return;
         if (action === "regen") return generateAssistant({ regenerateIndex: idx });
@@ -726,25 +734,16 @@ ${raw}
         if (next === null) return;
         const text = next.trim();
         if (!text) return toast("内容不能为空", "err");
-        if (m.role === "assistant") {
-          if (Array.isArray(m.versions)) {
-            const vi = Math.min(Math.max(Number(m.currentVersion || 0), 0), m.versions.length - 1);
-            m.versions[vi] = { ...(m.versions[vi] || {}), content: text, editedAt: nowIso() };
-          } else {
-            m.content = text;
-            m.editedAt = nowIso();
-          }
-        } else {
-          m.content = text;
-          m.editedAt = nowIso();
-          if (idx < s.messages.length - 1 && confirm("是否从这条用户消息开始删除后续内容并重新生成？")) {
-            s.messages = s.messages.slice(0, idx + 1);
-            s.updatedAt = nowIso();
-            saveAll();
-            renderAll();
-            if (ensureReadyForApi()) generateAssistant({ regenerateIndex: -1 });
-            return;
-          }
+        if (m.role !== "user") return toast("AI 回复不支持编辑，可用重新生成或复制后另存。", "err");
+        m.content = text;
+        m.editedAt = nowIso();
+        if (idx < s.messages.length - 1 && confirm("是否从这条用户消息开始删除后续内容并重新生成？")) {
+          s.messages = s.messages.slice(0, idx + 1);
+          s.updatedAt = nowIso();
+          saveAll();
+          renderAll();
+          if (ensureReadyForApi()) generateAssistant({ regenerateIndex: -1 });
+          return;
         }
         s.updatedAt = nowIso();
         saveAll();
@@ -804,7 +803,7 @@ ${raw}
       async function callDeepSeek(messages, opts={}) { if (!settings.workerUrl) throw new Error("请先填写 Worker 接口地址"); if (!settings.appToken) throw new Error("请先填写 APP_TOKEN"); const body = { model: opts.model || settings.model, messages, temperature: Number(settings.temperature || 0.9), max_tokens: Number(opts.maxTokens || settings.maxTokens || 2800), thinking: opts.thinking ?? settings.thinkingMode }; const res = await fetch(settings.workerUrl, { method: "POST", headers: { "Content-Type": "application/json", "X-App-Token": settings.appToken }, body: JSON.stringify(body) }); const text = await res.text(); let data; try { data = JSON.parse(text); } catch { data = { raw: text }; } if (!res.ok) { let detail = data.detail || data.error || data.message || text || "请求失败"; if (typeof detail === "object") detail = JSON.stringify(detail); try { const parsed = typeof detail === "string" ? JSON.parse(detail) : null; if (parsed) detail = parsed.error?.message || parsed.message || parsed.error || detail; } catch {} throw new Error(`HTTP ${res.status} · ${String(detail).slice(0, 1200)}`); } return data; }
       function parseReply(data) { const msg = data?.choices?.[0]?.message || {}; return { content: msg.content || data?.content || "", reasoning: msg.reasoning_content || msg.reasoning || data?.reasoning_content || "" }; }
 
-      function exportAll() { const payload = { version: APP_VERSION, exportedAt: nowIso(), settings: { ...settings, appToken: "" }, sessions, characters, lorebook }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `lily-rp-v6-9-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+      function exportAll() { const payload = { version: APP_VERSION, exportedAt: nowIso(), settings: { ...settings, appToken: "" }, sessions, characters, lorebook }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `lily-rp-v6-12-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
       function importAll() { const file = els.importFile.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(reader.result); if (!confirm("导入会合并窗口、角色和世界书。继续？")) return; if (Array.isArray(data.sessions)) sessions = mergeById(sessions, data.sessions); if (Array.isArray(data.characters)) characters = mergeById(characters, data.characters); if (Array.isArray(data.lorebook)) lorebook = mergeById(lorebook, data.lorebook); if (data.settings) settings = { ...settings, ...data.settings, appToken: settings.appToken }; normalizeAll(); saveAll(); renderAll(); toast("导入完成"); } catch (e) { toast("导入失败：" + e.message, "err"); } finally { els.importFile.value = ""; } }; reader.readAsText(file); }
       function mergeById(oldArr, newArr) { const map = new Map(oldArr.map(x => [x.id, x])); newArr.forEach(x => { if (x && x.id) map.set(x.id, x); }); return Array.from(map.values()); }
     })();
