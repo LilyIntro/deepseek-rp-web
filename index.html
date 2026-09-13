@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lily RP v6.13</title>
+  <title>Lily RP v6.16</title>
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Lily RP" />
@@ -167,7 +167,7 @@
   <div class="app">
     <header class="header">
       <div class="header-inner">
-        <div class="brand"><div class="logo">13</div><div><h1>v6.13</h1></div></div>
+        <div class="brand"><div class="logo">16</div><div><h1>v6.16</h1></div></div>
         <div class="mobile-actions">
           <button id="mobileSideBtn" type="button">侧栏</button>
           <button id="mobileMenuBtn" type="button">菜单</button>
@@ -286,19 +286,29 @@
     </div>
   </div></dialog>
 
-  <dialog id="memoryDialog"><div class="dialog-card"><div class="dialog-head"><h2>记忆系统</h2><button id="closeMemory" type="button">×</button></div>
-    <div class="grid2"><label>短期记忆消息数<input id="shortLimitInput" type="number" min="4" max="120" step="2" /></label><label>自动总结使用模型<input id="summaryModelInput" placeholder="默认使用当前模型" /></label></div>
+  <dialog id="memoryDialog"><div class="dialog-card"><div class="dialog-head"><h2>记忆系统 / 分层压缩</h2><button id="closeMemory" type="button">×</button></div>
+    <div class="grid3"><label>短期记忆消息数<input id="shortLimitInput" type="number" min="4" max="120" step="2" /></label><label>压缩目标字数<input id="memoryTargetInput" type="number" min="300" max="4000" step="100" /></label><label>自动总结使用模型<input id="summaryModelInput" placeholder="默认使用当前模型" /></label></div>
+    <div class="hint">v6.16 记忆分层：每轮默认发送「锁定记忆 + 活跃记忆 + 场景摘要」，「长期素材」和「归档记忆」默认不发送，避免后期 token 暴涨。</div>
     <label>当前窗口场景设定<textarea id="scenarioPromptInput" rows="4" placeholder="世界观、开场、当前地点、时间、在场角色、当前任务。"></textarea></label>
-    <label>当前场景摘要<textarea id="sceneSummaryInput" rows="4" placeholder="当前地点、时间、在场角色、局面和冲突。"></textarea></label>
-    <label>长期记忆<textarea id="longMemoryInput" rows="5" placeholder="已经发生的重要事件、关系变化、玩家已知信息、伏笔等。"></textarea></label>
-    <label>锁定记忆<textarea id="lockedMemoryInput" rows="4" placeholder="不可被自动总结覆盖的核心事实。"></textarea></label>
-    <div class="pill-row"><button id="summarizeBtn" type="button">自动总结最近剧情</button><button id="compactLongMemoryBtn" type="button">压缩长期记忆</button><button id="updateCharacterStatesBtn" type="button">提取人物变化</button><button id="applySummaryToSceneBtn" type="button">草稿应用到场景摘要</button><button id="appendSummaryToLongBtn" type="button">草稿追加到长期记忆</button><button id="replaceLongMemoryBtn" type="button">草稿替换长期记忆</button><button id="compressHistoryBtn" type="button">压缩早期历史</button></div>
-    <label>自动总结草稿<textarea id="summaryDraftInput" rows="7" placeholder="点击自动总结后生成，确认无误再应用。"></textarea></label>
+    <label>当前场景摘要<textarea id="sceneSummaryInput" rows="4" placeholder="当前地点、时间、在场角色、局面和冲突。每轮会发送。"></textarea></label>
+    <label>锁定记忆<textarea id="lockedMemoryInput" rows="4" placeholder="不可被自动总结覆盖的核心事实。每轮会发送，请保持精简。"></textarea></label>
+    <label>活跃记忆<textarea id="activeMemoryInput" rows="5" placeholder="当前章节真正需要模型记住的事实。每轮会发送。建议控制在 800-1800 字。"></textarea></label>
+    <label>长期记忆 / 待压缩素材<textarea id="longMemoryInput" rows="5" placeholder="完整历史、旧剧情、较长记录。默认不直接发送；用“分层压缩”生成活跃记忆和归档记忆。"></textarea></label>
+    <label>归档记忆<textarea id="archiveMemoryInput" rows="5" placeholder="旧章节归档，默认不发送给模型。需要时可手动复制到活跃记忆或世界书。"></textarea></label>
+    <div class="pill-row"><button id="summarizeBtn" type="button">自动总结最近剧情</button><button id="buildActiveMemoryBtn" type="button">生成活跃记忆</button><button id="compactLongMemoryBtn" type="button">分层压缩长期记忆</button><button id="archiveLongMemoryBtn" type="button">长期记忆移入归档</button><button id="compressHistoryBtn" type="button">压缩早期历史</button></div>
+    <div class="pill-row"><button id="applySummaryToSceneBtn" type="button">草稿应用到场景摘要</button><button id="applySummaryToActiveBtn" type="button">草稿应用到活跃记忆</button><button id="appendSummaryToLongBtn" type="button">草稿追加到长期素材</button><button id="replaceLongMemoryBtn" type="button">草稿替换长期素材</button></div>
+    <label>记忆草稿<textarea id="summaryDraftInput" rows="7" placeholder="自动总结 / 分层压缩 / 生成活跃记忆后显示，确认无误再应用。"></textarea></label>
+    <div class="section-title">人物变化自动更新</div>
+    <div class="hint">点击“提取人物变化”会生成结构化更新草稿；点击“应用人物变化到角色卡”后，只写入角色的「人物变化 / 当前状态」和「关系备注」，不会覆盖原始人设。</div>
+    <div class="pill-row"><button id="updateCharacterStatesBtn" type="button">提取人物变化</button><button id="applyCharacterUpdatesBtn" type="button">应用人物变化到角色卡</button></div>
+    <label>人物变化更新草稿<textarea id="characterUpdateDraftInput" rows="7" placeholder="建议保留 JSON 格式。你可以先检查，再应用到角色卡。"></textarea></label>
     <div class="dialog-actions"><button id="cancelMemory" type="button">取消</button><button id="saveMemoryBtn" type="button" class="primary">保存记忆</button></div>
   </div></dialog>
 
   <dialog id="controlsDialog"><div class="dialog-card"><div class="dialog-head"><h2>回复控制面板</h2><button id="closeControls" type="button">×</button></div>
-    <div class="hint">v6.13：成人小说开放底层驱动；顶部仅显示版本号；保留折叠操作栏与禁止编辑 AI 回复。</div>
+    <div class="hint">v6.16：支持固定隐藏创作策略，并继续保持缓存友好的提示词前缀。</div>
+    <label>额外创作策略（可选）<textarea id="creativeStrategyInput" rows="6" placeholder="这里可以写当前窗口额外需要 AI 长期执行的作者层要求；留空也可以。"></textarea></label>
+    <div class="hint">这属于作者层导演指令：会在每轮请求中靠前发送。建议写稳定、长期不变的规则；频繁修改会降低缓存命中。</div>
     <div class="grid2"><label>回复长度<select id="ctrlLength"><option>短</option><option>中</option><option>长</option><option>超长</option></select></label><label>剧情推进<select id="ctrlPace"><option>慢热</option><option>正常</option><option>积极推进</option></select></label></div>
     <div class="grid2"><label>对白比例<select id="ctrlDialogue"><option>少对白</option><option>平衡</option><option>多对白</option></select></label><label>描写密度<select id="ctrlDetail"><option>轻描写</option><option>标准</option><option>细腻</option></select></label></div>
     <div class="grid2"><label>角色主动性<select id="ctrlInitiative"><option>被动回应</option><option>适度主动</option><option>强主动</option></select></label><label>情感复杂度<select id="ctrlEmotion"><option>克制</option><option>暧昧</option><option>高张力</option><option>危险关系</option></select></label></div>
@@ -313,7 +323,7 @@
   <script>
     (() => {
       "use strict";
-      const APP_VERSION = "v6.13.0";
+      const APP_VERSION = "v6.16.0";
       const STORAGE = { settings: "lily_rp_v6_settings", sessions: "lily_rp_v6_sessions", characters: "lily_rp_v6_characters", lore: "lily_rp_v6_lore", lastSession: "lily_rp_v6_last_session" };
       const V5 = { settings: "lily_rp_v5_settings", sessions: "lily_rp_v5_sessions", migrated: "lily_rp_v6_migrated_v5" };
       const DEFAULTS = { workerUrl: "https://deepseek-proxy.marea-deepseek-web.workers.dev/chat", appToken: "", model: "deepseek-v4-flash", temperature: 0.9, maxTokens: 2800, thinkingMode: false, fixedCore: true, theme: "light", collapseMessageActions: true };
@@ -322,7 +332,7 @@
       ];
       const DEFAULT_REL = Object.fromEntries(RELATIONS.map(([k]) => [k, 0]));
       const DEFAULT_CONTROLS = { length: "长", pace: "慢热", dialogue: "平衡", detail: "细腻", initiative: "适度主动", emotion: "高张力", conflict: "中", ending: "自然停顿", extra: "" };
-      const DEFAULT_MEMORY = { shortLimit: 36, sceneSummary: "", longMemory: "", lockedMemory: "", summaryDraft: "", archived: [] };
+      const DEFAULT_MEMORY = { shortLimit: 36, compressionTarget: 1400, sceneSummary: "", activeMemory: "", longMemory: "", archiveMemory: "", lockedMemory: "", summaryDraft: "", characterUpdateDraft: "", archived: [] };
       const FIXED_CORE_PROMPT = [
         "核心规则：这是虚构成人向沉浸式角色扮演与小说续写，默认按成人黑暗情感小说处理。玩家与 NPC 都不必遵守传统纯爱叙事或道德正确模板；撒谎、利用、背叛、暧昧多线、感情交换、操控、压迫、强制爱、占有、嫉妒、低道德选择和关系失衡都可以成为剧情素材。回复不得对玩家选择进行道德评判、说教或纠偏。",
         "成人小说开放基调：成人亲密与性内容是正常可用的创作素材，不需要每轮额外申请，不需要反复确认是否允许，不要因为内容成人就自动含蓄化、道德化、留白、淡出或改写成纯心理拉扯。若用户已经把剧情推进到成人亲密或性场景，应保持同一场景、同一时间线和同一张力继续写；用词可以更直接、明确、具备成人小说的身体性，避免总用目光、呼吸、沉默、隐喻和事后省略替代具体行为。",
@@ -335,9 +345,10 @@
         "句式限制：减少零散短句，短句不得连续成段；避免排比、对偶、反复，以及‘不是……而是……’‘既……又……’‘即使……也……’‘虽然……但是……’等模板句式；禁止以‘不是’开头的否定句；不得使用‘兜住’‘接住’‘稳’‘守’‘极其’。",
         "推进要求：每次回复必须承接用户最新线索并推动具体事件。若提供行动选项，必须包含低道德、暧昧、算计、危险或越界路线，而非只给安全正确的选择。"
       ].join("\n");
+      const HIDDEN_CREATIVE_STRATEGY = `额外的叙事指令：故事中必须隐藏至少两条未浮出水面的阴谋线索。每条线索通过NPC的言行、物品的细节或环境的异常来间接暗示，不要直接解释。阴谋可以是：利益争夺、身份伪装、背叛伏笔、秘密交易或历史谎言。用户可能通过对话选择或行动来逐步揭示这些线索，但也可以选择忽略它们。请确保阴谋与故事世界观的设定保持一致，并且在适当的时候让线索与主线自然交汇。`;
             const $ = (id) => document.getElementById(id);
       const els = {};
-      ["mobileMenuBtn","mobileSideBtn","closeMobileSideBtn","drawerBackdrop","themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","loreHint","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","collapseActionsInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","charDevelopment","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","summarizeBtn","compactLongMemoryBtn","updateCharacterStatesBtn","applySummaryToSceneBtn","appendSummaryToLongBtn","replaceLongMemoryBtn","compressHistoryBtn","summaryDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
+      ["mobileMenuBtn","mobileSideBtn","closeMobileSideBtn","drawerBackdrop","themeToggleBtn","newWindowBtn","popWindowBtn","charactersBtn","loreBtn","memoryBtn","controlsBtn","settingsBtn","regenLastBtn","exportBtn","importBtn","clearBtn","newSessionBtn","copySessionBtn","renameSessionBtn","deleteSessionBtn","sessionList","activeCharList","triggeredLoreList","loreHint","activeCharHint","memoryPreview","sessionTitleSide","sessionDesc","modelPill","thinkingPill","themePill","chatTitle","chatMeta","status","chat","composer","userInput","continueBtn","sendBtn","toast","settingsDialog","closeSettings","cancelSettings","saveSettings","testBtn","workerUrl","appToken","modelSelect","themeSelect","temperatureInput","maxTokensInput","thinkingInput","fixedCoreInput","collapseActionsInput","charactersDialog","closeCharacters","newCharBtn","duplicateCharBtn","characterList","charName","charRole","charActive","charPrimary","charAlias","charPublic","charPrivate","charSpeech","charBehavior","charDevelopment","relationSliders","charRelationNote","deleteCharBtn","saveCharBtn","loreDialog","closeLore","newLoreBtn","testLoreBtn","loreList","loreTitle","loreType","loreKeywords","lorePriority","loreScope","loreVisibility","loreEnabled","loreAlwaysOn","loreContent","loreNotes","deleteLoreBtn","saveLoreBtn","memoryDialog","closeMemory","scenarioPromptInput","shortLimitInput","memoryTargetInput","summaryModelInput","sceneSummaryInput","longMemoryInput","lockedMemoryInput","activeMemoryInput","archiveMemoryInput","summarizeBtn","buildActiveMemoryBtn","compactLongMemoryBtn","archiveLongMemoryBtn","updateCharacterStatesBtn","applyCharacterUpdatesBtn","applySummaryToSceneBtn","applySummaryToActiveBtn","appendSummaryToLongBtn","replaceLongMemoryBtn","compressHistoryBtn","summaryDraftInput","characterUpdateDraftInput","cancelMemory","saveMemoryBtn","controlsDialog","closeControls","creativeStrategyInput","ctrlLength","ctrlPace","ctrlDialogue","ctrlDetail","ctrlInitiative","ctrlEmotion","ctrlConflict","ctrlEnding","ctrlExtra","resetControlsBtn","cancelControls","saveControlsBtn","importFile"].forEach(id => els[id] = $(id));
 
       let settings = readObject(STORAGE.settings, DEFAULTS);
       let sessions = readArray(STORAGE.sessions);
@@ -391,12 +402,12 @@
             charId = uid("char");
             newChars.push({ id: charId, name: p.characterName || s.title || "旧角色", role: "迁移角色", alias: [], publicProfile: p.characterPrompt || "", privateProfile: "", speechStyle: "", behaviorRules: "", development: "", relation: { ...DEFAULT_REL }, relationNote: "", createdAt: nowIso(), updatedAt: nowIso() });
           }
-          return { id: s.id || uid("win"), title: s.title || "旧窗口", activeCharacterIds: charId ? [charId] : [], primaryCharacterId: charId, scenarioPrompt: p.scenarioPrompt || "", memory: { ...DEFAULT_MEMORY, longMemory: p.memoryPrompt || "" }, controls: { ...DEFAULT_CONTROLS }, messages: Array.isArray(s.messages) ? s.messages : [], createdAt: s.createdAt || nowIso(), updatedAt: s.updatedAt || nowIso() };
+          return { id: s.id || uid("win"), title: s.title || "旧窗口", creativeStrategy: "", activeCharacterIds: charId ? [charId] : [], primaryCharacterId: charId, scenarioPrompt: p.scenarioPrompt || "", memory: { ...DEFAULT_MEMORY, longMemory: p.memoryPrompt || "" }, controls: { ...DEFAULT_CONTROLS }, messages: Array.isArray(s.messages) ? s.messages : [], createdAt: s.createdAt || nowIso(), updatedAt: s.updatedAt || nowIso() };
         });
         sessions = newSessions; characters = newChars; localStorage.setItem(V5.migrated, "1"); saveAll();
       }
 
-      function makeSession(title="新窗口") { return { id: uid("win"), title, activeCharacterIds: [], primaryCharacterId: "", scenarioPrompt: "", memory: { ...DEFAULT_MEMORY }, controls: { ...DEFAULT_CONTROLS }, messages: [], createdAt: nowIso(), updatedAt: nowIso() }; }
+      function makeSession(title="新窗口") { return { id: uid("win"), title, activeCharacterIds: [], primaryCharacterId: "", scenarioPrompt: "", creativeStrategy: "", memory: { ...DEFAULT_MEMORY }, controls: { ...DEFAULT_CONTROLS }, messages: [], createdAt: nowIso(), updatedAt: nowIso() }; }
       function makeCharacter(name="新角色") { return { id: uid("char"), name, role: "", alias: [], publicProfile: "", privateProfile: "", speechStyle: "", behaviorRules: "", development: "", relation: { ...DEFAULT_REL }, relationNote: "", createdAt: nowIso(), updatedAt: nowIso() }; }
       function makeLore(title="新条目") { return { id: uid("lore"), title, type: "", keywords: [], content: "", priority: 50, enabled: true, alwaysOn: false, scope: "global", visibility: "internal", notes: "", sessionId: "", createdAt: nowIso(), updatedAt: nowIso() }; }
       function normalizeAll() {
@@ -438,9 +449,9 @@ ${raw}
         els.closeSettings.onclick = els.cancelSettings.onclick = () => closeDialog(els.settingsDialog); els.saveSettings.onclick = saveSettingsFromForm; els.testBtn.onclick = testConnection;
         els.closeCharacters.onclick = () => closeDialog(els.charactersDialog); els.newCharBtn.onclick = newCharacter; els.duplicateCharBtn.onclick = duplicateCharacter; els.saveCharBtn.onclick = saveCharacterFromForm; els.deleteCharBtn.onclick = deleteCharacter;
         els.closeLore.onclick = () => closeDialog(els.loreDialog); els.newLoreBtn.onclick = newLore; els.testLoreBtn.onclick = () => { renderTriggeredLorePreview(); toast("已刷新本轮世界书预览"); }; els.saveLoreBtn.onclick = saveLoreFromForm; els.deleteLoreBtn.onclick = deleteLore;
-        els.closeMemory.onclick = els.cancelMemory.onclick = () => closeDialog(els.memoryDialog); els.saveMemoryBtn.onclick = saveMemoryFromForm; els.summarizeBtn.onclick = summarizeRecent; els.compactLongMemoryBtn.onclick = compactLongMemory; els.updateCharacterStatesBtn.onclick = extractCharacterChanges; els.applySummaryToSceneBtn.onclick = () => { els.sceneSummaryInput.value = els.summaryDraftInput.value.trim(); toast("已应用到场景摘要，记得保存"); }; els.appendSummaryToLongBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = [els.longMemoryInput.value.trim(), draft].filter(Boolean).join("\n\n"); toast("已追加到长期记忆，记得保存"); }; els.replaceLongMemoryBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = draft; toast("已用草稿替换长期记忆，记得保存"); }; els.compressHistoryBtn.onclick = compressHistory;
+        els.closeMemory.onclick = els.cancelMemory.onclick = () => closeDialog(els.memoryDialog); els.saveMemoryBtn.onclick = saveMemoryFromForm; els.summarizeBtn.onclick = summarizeRecent; els.buildActiveMemoryBtn.onclick = buildActiveMemory; els.compactLongMemoryBtn.onclick = compactLongMemory; els.archiveLongMemoryBtn.onclick = archiveLongMemory; els.updateCharacterStatesBtn.onclick = extractCharacterChanges; els.applyCharacterUpdatesBtn.onclick = applyCharacterUpdates; els.applySummaryToSceneBtn.onclick = () => { els.sceneSummaryInput.value = els.summaryDraftInput.value.trim(); toast("已应用到场景摘要，记得保存"); }; els.applySummaryToActiveBtn.onclick = () => { const draft = extractSection(els.summaryDraftInput.value, "活跃记忆") || els.summaryDraftInput.value.trim(); if (draft) els.activeMemoryInput.value = draft; toast("已应用到活跃记忆，记得保存"); }; els.appendSummaryToLongBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = [els.longMemoryInput.value.trim(), draft].filter(Boolean).join("\n\n"); toast("已追加到长期素材，记得保存"); }; els.replaceLongMemoryBtn.onclick = () => { const draft = els.summaryDraftInput.value.trim(); if (draft) els.longMemoryInput.value = draft; toast("已用草稿替换长期素材，记得保存"); }; els.compressHistoryBtn.onclick = compressHistory;
         els.closeControls.onclick = els.cancelControls.onclick = () => closeDialog(els.controlsDialog); els.saveControlsBtn.onclick = saveControlsFromForm; els.resetControlsBtn.onclick = () => fillControlsForm({ ...DEFAULT_CONTROLS });
-        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6-12", "_blank");
+        els.newSessionBtn.onclick = () => createSession(false); els.newWindowBtn.onclick = () => createSession(true); els.copySessionBtn.onclick = copyCurrentSession; els.renameSessionBtn.onclick = renameCurrentSession; els.deleteSessionBtn.onclick = deleteCurrentSession; els.popWindowBtn.onclick = () => window.open(location.pathname + "?w=" + encodeURIComponent(currentSessionId) + "&v=rp-v6-15", "_blank");
         els.exportBtn.onclick = exportAll; els.importBtn.onclick = () => els.importFile.click(); els.importFile.onchange = importAll;
         els.clearBtn.onclick = clearChat;
         els.sessionList.onclick = e => { const btn = e.target.closest("button[data-session]"); if (btn) switchSession(btn.dataset.session); };
@@ -453,7 +464,7 @@ ${raw}
       function renderAll() { renderHeader(); renderSessions(); renderSidebar(); renderChat(); renderTriggeredLorePreview(); }
       function effectiveTheme() { if (settings.theme === "auto") return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; return settings.theme || "light"; }
       function applyTheme() { document.documentElement.dataset.theme = effectiveTheme(); }
-      function renderHeader() { const s = currentSession(); els.sessionTitleSide.textContent = s.title || "未命名窗口"; els.chatTitle.textContent = s.title || "当前对话"; els.modelPill.textContent = settings.model; els.thinkingPill.textContent = "思考：" + (settings.thinkingMode ? "开" : "关"); els.themePill.textContent = effectiveTheme() === "dark" ? "黑夜" : "白天"; els.themeToggleBtn.textContent = effectiveTheme() === "dark" ? "白天" : "黑夜"; els.chatMeta.textContent = `短期记忆 ${s.memory.shortLimit || 36} 条 · ${s.messages.length} 条消息 · 本地存档`; }
+      function renderHeader() { const s = currentSession(); els.sessionTitleSide.textContent = s.title || "未命名窗口"; els.chatTitle.textContent = s.title || "当前对话"; els.modelPill.textContent = settings.model; els.thinkingPill.textContent = "思考：" + (settings.thinkingMode ? "开" : "关"); els.themePill.textContent = effectiveTheme() === "dark" ? "黑夜" : "白天"; els.themeToggleBtn.textContent = effectiveTheme() === "dark" ? "白天" : "黑夜"; els.chatMeta.textContent = `短期 ${s.memory.shortLimit || 36} 条 · 活跃记忆 ${(s.memory.activeMemory || s.memory.longMemory || "").length} 字 · ${s.messages.length} 条消息`; }
       function renderSessions() { els.sessionList.innerHTML = ""; sessions.forEach(s => { const b = document.createElement("button"); b.type = "button"; b.dataset.session = s.id; b.className = "session-item" + (s.id === currentSessionId ? " active" : ""); const left = document.createElement("div"); left.innerHTML = `<div class="item-title"></div><div class="item-meta"></div>`; left.querySelector(".item-title").textContent = s.title || "未命名"; left.querySelector(".item-meta").textContent = `${s.messages.length} 消息 · ${s.activeCharacterIds.length} 角色`; const right = document.createElement("span"); right.className = "item-meta"; right.textContent = s.id === currentSessionId ? "当前" : "切换"; b.append(left,right); els.sessionList.appendChild(b); }); }
       function renderSidebar() { const s = currentSession(); const active = activeCharacters(s); els.activeCharList.innerHTML = ""; els.activeCharHint.textContent = active.length ? "当前启用角色会参与 prompt。" : "未启用角色。点「角色库」添加并勾选当前窗口启用。"; active.forEach(c => { const d = document.createElement("div"); d.className = "pill"; d.textContent = `${c.name}${s.primaryCharacterId === c.id ? " · 主控" : ""}`; els.activeCharList.appendChild(d); }); const mem = [s.memory.lockedMemory, s.memory.longMemory, s.memory.sceneSummary].filter(Boolean).join("\n").trim(); els.memoryPreview.textContent = mem ? mem.slice(0, 160) + (mem.length > 160 ? "……" : "") : "未写入长期记忆。"; els.sessionDesc.textContent = `角色 ${active.length} · 世界书 ${lorebook.filter(l=>l.enabled).length} · ${controlsSummary(s.controls)}`; }
       function renderChat() {
@@ -516,7 +527,7 @@ ${raw}
       function renderTriggeredLorePreview() { if (!els.triggeredLoreList) return; const triggered = selectTriggeredLore("", true); els.triggeredLoreList.innerHTML = ""; if (!triggered.length) { if (els.loreHint) els.loreHint.textContent = "当前没有触发世界书。常驻项或关键词命中后会出现在这里。"; return; } if (els.loreHint) els.loreHint.textContent = `预计触发 ${triggered.length} 条：`; triggered.forEach(l => { const d = document.createElement("div"); d.className = "pill"; d.textContent = `${l.title} · ${l.priority}`; els.triggeredLoreList.appendChild(d); }); }
 
       function switchSession(id) { if (!sessions.some(s => s.id === id)) return; currentSessionId = id; saveAll(); renderAll(); }
-      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6-12", "_blank"); }
+      function createSession(openNew) { const s = makeSession("新窗口"); sessions.unshift(s); currentSessionId = s.id; saveAll(); renderAll(); if (openNew) window.open(location.pathname + "?w=" + encodeURIComponent(s.id) + "&v=rp-v6-15", "_blank"); }
       function copyCurrentSession() { const cur = currentSession(); const copy = JSON.parse(JSON.stringify(cur)); copy.id = uid("win"); copy.title = (cur.title || "窗口") + " · 副本"; copy.createdAt = nowIso(); copy.updatedAt = nowIso(); sessions.unshift(copy); currentSessionId = copy.id; saveAll(); renderAll(); toast("已复制当前窗口"); }
       function renameCurrentSession() { const cur = currentSession(); const name = prompt("窗口名：", cur.title || ""); if (!name) return; cur.title = name.trim(); cur.updatedAt = nowIso(); saveAll(); renderAll(); }
       function deleteCurrentSession() { if (sessions.length <= 1) return toast("至少保留一个窗口", "err"); if (!confirm("确定删除当前窗口？聊天记录会一起删除。")) return; sessions = sessions.filter(s => s.id !== currentSessionId); currentSessionId = sessions[0].id; saveAll(); renderAll(); }
@@ -548,77 +559,189 @@ ${raw}
       function saveLoreFromForm() { let l = selectedLore(); if (!l) { l = makeLore(); lorebook.unshift(l); selectedLoreId = l.id; } l.title = els.loreTitle.value.trim() || "未命名条目"; l.type = els.loreType.value.trim(); l.keywords = splitList(els.loreKeywords.value); l.priority = Math.round(clampNum(els.lorePriority.value,0,100,50)); l.scope = els.loreScope.value; l.visibility = els.loreVisibility.value; l.enabled = els.loreEnabled.checked; l.alwaysOn = els.loreAlwaysOn.checked; l.content = els.loreContent.value.trim(); l.notes = els.loreNotes.value.trim(); if (l.scope === "session") l.sessionId = currentSessionId; l.updatedAt = nowIso(); saveAll(); renderAll(); renderLoreList(); toast("世界书条目已保存"); }
       function deleteLore() { const l = selectedLore(); if (!l) return; if (!confirm(`删除世界书「${l.title || "未命名"}」？`)) return; lorebook = lorebook.filter(x => x.id !== l.id); selectedLoreId = lorebook[0]?.id || ""; saveAll(); renderAll(); renderLoreList(); fillLoreForm(selectedLore()); }
 
-      function openMemory() { const m = currentSession().memory; els.scenarioPromptInput.value = currentSession().scenarioPrompt || ""; els.shortLimitInput.value = m.shortLimit || 36; els.summaryModelInput.value = ""; els.sceneSummaryInput.value = m.sceneSummary || ""; els.longMemoryInput.value = m.longMemory || ""; els.lockedMemoryInput.value = m.lockedMemory || ""; els.summaryDraftInput.value = m.summaryDraft || ""; openDialog(els.memoryDialog); }
-      function saveMemoryFromForm(close=true) { const s = currentSession(); s.scenarioPrompt = els.scenarioPromptInput.value.trim(); s.memory.shortLimit = Math.round(clampNum(els.shortLimitInput.value,4,120,36)); s.memory.sceneSummary = els.sceneSummaryInput.value.trim(); s.memory.longMemory = els.longMemoryInput.value.trim(); s.memory.lockedMemory = els.lockedMemoryInput.value.trim(); s.memory.summaryDraft = els.summaryDraftInput.value.trim(); s.updatedAt = nowIso(); saveAll(); if (close) closeDialog(els.memoryDialog); renderAll(); if (close) toast("记忆已保存"); }
-      async function summarizeRecent() { saveMemoryFromForm(false); openDialog(els.memoryDialog); const s = currentSession(); const recent = s.messages.slice(-Math.max(8, Number(s.memory.shortLimit || 36))).map(m => `${m.role === "user" ? "用户" : "角色"}：${selectedContent(m)}`).join("\n\n"); if (!recent.trim()) return toast("没有可总结的聊天记录", "err"); const prompt = ["请把以下角色扮演剧情整理为结构化摘要，必须保留信息权限，不要把玩家未知信息写成玩家已知。输出栏目：当前场景、已发生事件、角色关系变化、玩家已知信息、玩家未知但部分角色知道的信息、未解决冲突、下一步可推进方向。", "现有锁定记忆：\n" + (s.memory.lockedMemory || "无"), "现有长期记忆：\n" + (s.memory.longMemory || "无"), "最近剧情：\n" + recent].join("\n\n"); try { setBusy(true); const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: 1200, model: els.summaryModelInput.value.trim() || settings.model, thinking: false }); const text = parseReply(data).content; s.memory.summaryDraft = text; saveAll(); els.summaryDraftInput.value = text; toast("自动总结完成，请检查后再应用"); } catch (err) { const msg = readableError(err); els.status.textContent = "总结失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); } finally { setBusy(false); } }
-      async function compactLongMemory() {
-        saveMemoryFromForm(false);
+      function openMemory() {
+        const s = currentSession(); const m = s.memory;
+        els.scenarioPromptInput.value = s.scenarioPrompt || "";
+        els.shortLimitInput.value = m.shortLimit || 36;
+        els.memoryTargetInput.value = m.compressionTarget || 1400;
+        els.summaryModelInput.value = "";
+        els.sceneSummaryInput.value = m.sceneSummary || "";
+        els.lockedMemoryInput.value = m.lockedMemory || "";
+        els.activeMemoryInput.value = m.activeMemory || "";
+        els.longMemoryInput.value = m.longMemory || "";
+        els.archiveMemoryInput.value = m.archiveMemory || buildArchivedText(m);
+        els.summaryDraftInput.value = m.summaryDraft || "";
+        els.characterUpdateDraftInput.value = m.characterUpdateDraft || "";
         openDialog(els.memoryDialog);
+      }
+      function saveMemoryFromForm(close=true) {
         const s = currentSession();
+        s.scenarioPrompt = els.scenarioPromptInput.value.trim();
+        s.memory.shortLimit = Math.round(clampNum(els.shortLimitInput.value,4,120,36));
+        s.memory.compressionTarget = Math.round(clampNum(els.memoryTargetInput.value,300,4000,1400));
+        s.memory.sceneSummary = els.sceneSummaryInput.value.trim();
+        s.memory.lockedMemory = els.lockedMemoryInput.value.trim();
+        s.memory.activeMemory = els.activeMemoryInput.value.trim();
+        s.memory.longMemory = els.longMemoryInput.value.trim();
+        s.memory.archiveMemory = els.archiveMemoryInput.value.trim();
+        s.memory.summaryDraft = els.summaryDraftInput.value.trim();
+        s.memory.characterUpdateDraft = els.characterUpdateDraftInput.value.trim();
+        s.updatedAt = nowIso(); saveAll();
+        if (close) closeDialog(els.memoryDialog); renderAll(); if (close) toast("记忆已保存");
+      }
+      function buildArchivedText(m) {
+        return Array.isArray(m.archived) ? m.archived.map(a => `【${a.title || "归档"}】\n${a.summary || ""}`).filter(Boolean).join("\n\n") : "";
+      }
+      function splitBySize(text, size=3200) {
+        const paras = String(text || "").split(/\n{2,}/); const chunks = []; let cur = "";
+        for (const p of paras) {
+          const piece = p.trim(); if (!piece) continue;
+          if ((cur + "\n\n" + piece).length > size && cur) { chunks.push(cur); cur = piece; }
+          else cur = cur ? cur + "\n\n" + piece : piece;
+        }
+        if (cur) chunks.push(cur);
+        if (!chunks.length && text) for (let i=0;i<text.length;i+=size) chunks.push(text.slice(i,i+size));
+        return chunks;
+      }
+      function extractSection(text, name) {
+        const t = String(text || "");
+        const re = new RegExp(`【${name}】([\\s\\S]*?)(?=\\n?【[^】]+】|$)`);
+        const m = t.match(re); return m ? m[1].trim() : "";
+      }
+      function extractJsonArray(text) {
+        const t = String(text || "").trim();
+        try { const v = JSON.parse(t); return Array.isArray(v) ? v : (Array.isArray(v.updates) ? v.updates : []); } catch {}
+        const s = t.indexOf("["); const e = t.lastIndexOf("]");
+        if (s >= 0 && e > s) { try { const v = JSON.parse(t.slice(s, e + 1)); return Array.isArray(v) ? v : []; } catch {} }
+        return [];
+      }
+      function appendDatedBlock(oldText, block) {
+        const clean = String(block || "").trim(); if (!clean) return oldText || "";
+        const head = `【${new Date().toLocaleDateString("zh-CN")} 更新】`;
+        return [String(oldText || "").trim(), head + "\n" + clean].filter(Boolean).join("\n\n");
+      }
+      async function summarizeRecent() {
+        saveMemoryFromForm(false); openDialog(els.memoryDialog);
+        const s = currentSession();
+        const recent = s.messages.slice(-Math.max(8, Number(s.memory.shortLimit || 36))).map(m => `${m.role === "user" ? "用户" : "角色"}：${selectedContent(m)}`).join("\n\n");
+        if (!recent.trim()) return toast("没有可总结的聊天记录", "err");
+        const prompt = [
+          "请把以下角色扮演剧情整理为结构化摘要。必须保留信息权限，不要把玩家未知信息写成玩家已知。输出栏目：当前场景、已发生事件、角色关系变化、玩家已知信息、玩家未知但部分角色知道的信息、未解决冲突、下一步可推进方向。",
+          "现有锁定记忆：\n" + (s.memory.lockedMemory || "无"),
+          "现有活跃记忆：\n" + (s.memory.activeMemory || "无"),
+          "最近剧情：\n" + recent
+        ].join("\n\n");
+        try { setBusy(true); const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: 1200, model: els.summaryModelInput.value.trim() || settings.model, thinking: false }); const text = parseReply(data).content.trim(); s.memory.summaryDraft = text; saveAll(); els.summaryDraftInput.value = text; toast("自动总结完成，请检查后再应用"); }
+        catch (err) { const msg = readableError(err); els.status.textContent = "总结失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); }
+        finally { setBusy(false); }
+      }
+      async function buildActiveMemory() {
+        saveMemoryFromForm(false); openDialog(els.memoryDialog);
+        const s = currentSession(); const m = s.memory; const target = Math.round(clampNum(m.compressionTarget,300,4000,1400));
         const source = [
-          s.memory.lockedMemory ? "【锁定记忆】\n" + s.memory.lockedMemory : "",
-          s.memory.longMemory ? "【长期记忆】\n" + s.memory.longMemory : "",
-          s.memory.sceneSummary ? "【当前场景摘要】\n" + s.memory.sceneSummary : "",
-          Array.isArray(s.memory.archived) && s.memory.archived.length ? "【归档摘要】\n" + s.memory.archived.map(a => `${a.title || "摘要"}：${a.summary || ""}`).join("\n") : ""
+          m.lockedMemory ? "【锁定记忆】\n" + m.lockedMemory : "",
+          m.sceneSummary ? "【当前场景摘要】\n" + m.sceneSummary : "",
+          m.activeMemory ? "【现有活跃记忆】\n" + m.activeMemory : "",
+          m.longMemory ? "【长期素材】\n" + m.longMemory.slice(-8000) : "",
+          recentTextForSummary(s, Math.max(12, Number(m.shortLimit || 36))) ? "【最近剧情】\n" + recentTextForSummary(s, Math.max(12, Number(m.shortLimit || 36))) : ""
+        ].filter(Boolean).join("\n\n");
+        if (!source.trim()) return toast("没有可生成活跃记忆的内容", "err");
+        const prompt = [`请根据资料生成“活跃记忆”。目标 ${target} 字以内。只保留当前章节和后续数轮必须知道的事实：人物当前状态、关系变化、信息权限、未解决冲突、正在推进的暗线。不要重复锁定记忆，不写空泛评价。输出格式：\n【活跃记忆】\n...`, source].join("\n\n");
+        try { setBusy(true); const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: Math.min(1800, Math.max(700, Math.round(target*1.2))), model: els.summaryModelInput.value.trim() || settings.model, thinking: false }); const text = parseReply(data).content.trim(); s.memory.summaryDraft = text; saveAll(); els.summaryDraftInput.value = text; toast("活跃记忆草稿已生成，可一键应用到活跃记忆"); }
+        catch (err) { const msg = readableError(err); els.status.textContent = "生成活跃记忆失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); }
+        finally { setBusy(false); }
+      }
+      function recentTextForSummary(s, n) { return s.messages.slice(-n).map(m => `${m.role === "user" ? "用户" : "角色"}：${selectedContent(m)}`).join("\n\n"); }
+      async function compactLongMemory() {
+        saveMemoryFromForm(false); openDialog(els.memoryDialog);
+        const s = currentSession(); const m = s.memory; const target = Math.round(clampNum(m.compressionTarget,300,4000,1400));
+        const source = [
+          m.longMemory ? "【长期素材】\n" + m.longMemory : "",
+          m.archiveMemory ? "【已有归档】\n" + m.archiveMemory : "",
+          buildArchivedText(m) ? "【旧版归档】\n" + buildArchivedText(m) : ""
         ].filter(Boolean).join("\n\n");
         if (!source.trim()) return toast("没有可压缩的长期记忆", "err");
-        const prompt = [
-          "请把以下长期记忆压缩成更短、更稳定的写作记忆。保留：已发生事实、关系变化、玩家已知/未知信息、未解决冲突、重要伏笔、信息权限。删除重复、空泛抒情和过期细节。不要改写核心事实。输出直接给可保存的长期记忆正文，不要解释。",
-          source
-        ].join("\n\n");
+        const chunks = splitBySize(source, 3200);
         try {
-          setBusy(true);
-          const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: 1400, model: els.summaryModelInput.value.trim() || settings.model, thinking: false });
-          const text = parseReply(data).content.trim();
-          if (!text) throw new Error("压缩没有返回正文");
-          s.memory.summaryDraft = text;
-          saveAll();
-          els.summaryDraftInput.value = text;
-          toast("长期记忆压缩完成。请检查草稿，可点击“草稿替换长期记忆”保存。", "ok", 5200);
-        } catch (err) {
-          const msg = readableError(err);
-          els.status.textContent = "压缩失败：" + msg.slice(0, 180);
-          els.status.title = msg;
-          els.status.className = "status err";
-          toast(msg, "err", 12000);
-        } finally { setBusy(false); }
+          setBusy(true); const summaries = [];
+          for (let i=0; i<chunks.length; i++) {
+            els.status.textContent = `分段压缩中 ${i+1}/${chunks.length}`; els.status.className = "status";
+            const prompt = [`请压缩第 ${i+1}/${chunks.length} 段长期记忆，保留可复用事实、人物变化、关系转折、玩家已知/未知信息、伏笔和未解决冲突。删掉重复、空泛抒情、已经过期且无后果的细节。输出 500-900 字以内。`, chunks[i]].join("\n\n");
+            const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: 1000, model: els.summaryModelInput.value.trim() || settings.model, thinking: false });
+            summaries.push(parseReply(data).content.trim());
+          }
+          els.status.textContent = "合并压缩结果中";
+          const finalPrompt = [`请把以下分段摘要合并为分层记忆。目标：活跃记忆 ${target} 字以内，归档记忆可稍长。活跃记忆只保留当前章节和未来近期最需要的信息；归档记忆保留旧剧情事实、已回收线索、历史关系变化。不要改写核心事实。输出格式必须为：\n【活跃记忆】\n...\n\n【归档记忆】\n...`, summaries.map((x,i)=>`【分段摘要${i+1}】\n${x}`).join("\n\n")].join("\n\n");
+          const finalData = await callDeepSeek([{ role: "user", content: finalPrompt }], { maxTokens: Math.min(2600, Math.max(1200, Math.round(target*1.5))), model: els.summaryModelInput.value.trim() || settings.model, thinking: false });
+          const text = parseReply(finalData).content.trim(); if (!text) throw new Error("压缩没有返回正文");
+          s.memory.summaryDraft = text; saveAll(); els.summaryDraftInput.value = text; toast("分层压缩完成。请检查后应用到活跃记忆或归档记忆。", "ok", 5200);
+        } catch (err) { const msg = readableError(err); els.status.textContent = "压缩失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); }
+        finally { setBusy(false); }
+      }
+      function archiveLongMemory() {
+        saveMemoryFromForm(false);
+        const long = els.longMemoryInput.value.trim(); if (!long) return toast("长期素材为空", "err");
+        if (!confirm("会把当前长期素材移动到归档记忆，并清空长期素材。继续？")) return;
+        const title = `【归档 ${new Date().toLocaleDateString("zh-CN")}】`;
+        els.archiveMemoryInput.value = [els.archiveMemoryInput.value.trim(), title + "\n" + long].filter(Boolean).join("\n\n");
+        els.longMemoryInput.value = ""; toast("已移入归档，记得保存记忆");
       }
       async function extractCharacterChanges() {
-        saveMemoryFromForm(false);
-        openDialog(els.memoryDialog);
-        const s = currentSession();
-        const active = activeCharacters(s);
+        saveMemoryFromForm(false); openDialog(els.memoryDialog);
+        const s = currentSession(); const active = activeCharacters(s);
         if (!active.length) return toast("请先在角色库启用至少一个角色", "err");
-        const recent = s.messages.slice(-Math.max(10, Number(s.memory.shortLimit || 36))).map(m => `${m.role === "user" ? "用户" : "角色"}：${selectedContent(m)}`).join("\n\n");
+        const recent = recentTextForSummary(s, Math.max(10, Number(s.memory.shortLimit || 36)));
         if (!recent.trim()) return toast("没有可提取的人物变化", "err");
-        const charInfo = active.map(c => `【${c.name || "未命名"}】\n现有人物变化：${c.development || "无"}\n关系备注：${c.relationNote || "无"}\n关系值：${relationshipSummary(c)}`).join("\n\n");
+        const charInfo = active.map(c => `id:${c.id}\nname:${c.name || "未命名"}\n现有人物变化:${c.development || "无"}\n关系备注:${c.relationNote || "无"}\n关系值:${relationshipSummary(c)}`).join("\n\n");
         const prompt = [
-          "请根据最近剧情，为每个当前登场角色提取“人物变化 / 当前状态”草稿。只写已经发生或有充分依据的变化，不要新增人设，不要把玩家未知秘密写成公开事实。输出格式必须为：\n【角色名】\n人物变化：...\n关系变化：...\n可保留伏笔：...",
+          "请根据最近剧情，为当前登场角色生成可应用到角色卡的更新补丁。只写已经发生或有充分依据的变化，不要新增原始人设，不要把玩家未知秘密写成公开事实。必须只输出 JSON 数组，不要 Markdown，不要解释。数组元素格式：{\"id\":\"角色id\",\"name\":\"角色名\",\"developmentAppend\":\"追加到人物变化/当前状态的内容\",\"relationNoteAppend\":\"追加到关系备注的内容\",\"relationAdjust\":{\"affection\":0,\"trust\":0,\"suspicion\":0,\"desire\":0,\"jealousy\":0,\"dependence\":0,\"control\":0,\"fear\":0,\"resentment\":0,\"utility\":0}}。relationAdjust 只能给 -10 到 10 的小幅变化。",
           "当前角色资料：\n" + charInfo,
           "最近剧情：\n" + recent
         ].join("\n\n");
         try {
-          setBusy(true);
-          const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: 1600, model: els.summaryModelInput.value.trim() || settings.model, thinking: false });
-          const text = parseReply(data).content.trim();
-          if (!text) throw new Error("提取没有返回正文");
-          s.memory.summaryDraft = text;
-          saveAll();
-          els.summaryDraftInput.value = text;
-          toast("人物变化草稿已生成。请复制到角色库对应角色的“人物变化/当前状态”。", "ok", 5600);
-        } catch (err) {
-          const msg = readableError(err);
-          els.status.textContent = "提取失败：" + msg.slice(0, 180);
-          els.status.title = msg;
-          els.status.className = "status err";
-          toast(msg, "err", 12000);
-        } finally { setBusy(false); }
+          setBusy(true); const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: 1800, model: els.summaryModelInput.value.trim() || settings.model, thinking: false });
+          const text = parseReply(data).content.trim(); if (!text) throw new Error("提取没有返回正文");
+          s.memory.characterUpdateDraft = text; saveAll(); els.characterUpdateDraftInput.value = text; toast("人物变化更新草稿已生成。检查后可一键应用到角色卡。", "ok", 5600);
+        } catch (err) { const msg = readableError(err); els.status.textContent = "提取失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); }
+        finally { setBusy(false); }
       }
-      async function compressHistory() { const s = currentSession(); if (s.messages.length < 24) return toast("当前聊天不长，暂时不用压缩", "err"); if (!confirm("会把较早聊天总结进草稿，并只保留最近的短期消息。继续？")) return; await summarizeRecent(); const keep = Math.max(8, Number(s.memory.shortLimit || 36)); if (s.messages.length > keep) { s.messages = s.messages.slice(-keep); s.updatedAt = nowIso(); saveAll(); renderAll(); toast("已保留最近短期消息；摘要草稿请检查后保存到长期记忆"); } }
+      function applyCharacterUpdates() {
+        saveMemoryFromForm(false); const s = currentSession(); const text = els.characterUpdateDraftInput.value.trim();
+        if (!text) return toast("没有人物变化草稿", "err");
+        const updates = extractJsonArray(text); if (!updates.length) return toast("无法解析人物变化 JSON。请保留方括号数组格式。", "err", 9000);
+        if (!confirm(`将尝试应用 ${updates.length} 条角色更新，只追加到“人物变化/当前状态”和“关系备注”，并小幅调整关系值。继续？`)) return;
+        let applied = 0;
+        for (const u of updates) {
+          const c = characters.find(x => x.id === u.id) || characters.find(x => (x.name || "") === u.name) || characters.find(x => (x.alias || []).includes(u.name));
+          if (!c) continue;
+          if (u.developmentAppend) c.development = appendDatedBlock(c.development, String(u.developmentAppend));
+          if (u.relationNoteAppend) c.relationNote = appendDatedBlock(c.relationNote, String(u.relationNoteAppend));
+          if (u.relationAdjust && typeof u.relationAdjust === "object") {
+            c.relation = { ...DEFAULT_REL, ...(c.relation || {}) };
+            RELATIONS.forEach(([key]) => { const d = Number(u.relationAdjust[key] || 0); if (Number.isFinite(d) && d) c.relation[key] = Math.round(clampNum((c.relation[key] || 0) + Math.max(-10, Math.min(10, d)), -100, 100, 0)); });
+          }
+          c.updatedAt = nowIso(); applied++;
+        }
+        s.updatedAt = nowIso(); saveAll(); normalizeAll(); renderAll();
+        if (els.charactersDialog?.open) { renderCharacterList(); fillCharacterForm(selectedCharacter()); }
+        toast(applied ? `已应用 ${applied} 条人物变化到角色卡` : "没有找到可匹配的角色", applied ? "ok" : "err", 6000);
+      }
+      async function compressHistory() {
+        const s = currentSession(); if (s.messages.length < 24) return toast("当前聊天不长，暂时不用压缩", "err");
+        if (!confirm("会先总结较早聊天，追加到长期素材，并只保留最近的短期消息。继续？")) return;
+        const keep = Math.max(8, Number(s.memory.shortLimit || 36));
+        const old = s.messages.slice(0, Math.max(0, s.messages.length - keep));
+        if (!old.length) return toast("没有早期聊天需要压缩", "err");
+        const text = old.map(m => `${m.role === "user" ? "用户" : "角色"}：${selectedContent(m)}`).join("\n\n");
+        const prompt = ["请把以下早期聊天压缩为可保存的长期素材，保留已发生事实、关系变化、信息权限、伏笔和后果，删掉重复闲聊。输出直接给正文。", text].join("\n\n");
+        try { setBusy(true); const data = await callDeepSeek([{ role: "user", content: prompt }], { maxTokens: 1200, model: els.summaryModelInput.value.trim() || settings.model, thinking: false }); const summary = parseReply(data).content.trim(); s.memory.longMemory = [s.memory.longMemory, `【早期聊天压缩 ${new Date().toLocaleDateString("zh-CN")}】\n${summary}`].filter(Boolean).join("\n\n"); s.messages = s.messages.slice(-keep); s.updatedAt = nowIso(); saveAll(); openMemory(); renderAll(); toast("早期聊天已压缩到长期素材，并保留最近短期消息"); }
+        catch (err) { const msg = readableError(err); els.status.textContent = "压缩历史失败：" + msg.slice(0, 180); els.status.title = msg; els.status.className = "status err"; toast(msg, "err", 12000); }
+        finally { setBusy(false); }
+      }
 
       function openControls() { fillControlsForm(currentSession().controls); openDialog(els.controlsDialog); }
-      function fillControlsForm(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; els.ctrlLength.value = c.length; els.ctrlPace.value = c.pace; els.ctrlDialogue.value = c.dialogue; els.ctrlDetail.value = c.detail; els.ctrlInitiative.value = c.initiative; els.ctrlEmotion.value = c.emotion; els.ctrlConflict.value = c.conflict; els.ctrlEnding.value = c.ending; els.ctrlExtra.value = c.extra || ""; }
-      function saveControlsFromForm() { const s = currentSession(); s.controls = { length: els.ctrlLength.value, pace: els.ctrlPace.value, dialogue: els.ctrlDialogue.value, detail: els.ctrlDetail.value, initiative: els.ctrlInitiative.value, emotion: els.ctrlEmotion.value, conflict: els.ctrlConflict.value, ending: els.ctrlEnding.value, extra: els.ctrlExtra.value.trim() }; s.updatedAt = nowIso(); saveAll(); closeDialog(els.controlsDialog); renderAll(); toast("回复调参已保存"); }
+      function fillControlsForm(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; els.creativeStrategyInput.value = currentSession().creativeStrategy || ""; els.ctrlLength.value = c.length; els.ctrlPace.value = c.pace; els.ctrlDialogue.value = c.dialogue; els.ctrlDetail.value = c.detail; els.ctrlInitiative.value = c.initiative; els.ctrlEmotion.value = c.emotion; els.ctrlConflict.value = c.conflict; els.ctrlEnding.value = c.ending; els.ctrlExtra.value = c.extra || ""; }
+      function saveControlsFromForm() { const s = currentSession(); s.creativeStrategy = els.creativeStrategyInput.value.trim(); s.controls = { length: els.ctrlLength.value, pace: els.ctrlPace.value, dialogue: els.ctrlDialogue.value, detail: els.ctrlDetail.value, initiative: els.ctrlInitiative.value, emotion: els.ctrlEmotion.value, conflict: els.ctrlConflict.value, ending: els.ctrlEnding.value, extra: els.ctrlExtra.value.trim() }; s.updatedAt = nowIso(); saveAll(); closeDialog(els.controlsDialog); renderAll(); toast("额外创作策略与回复调参已保存"); }
       function controlsSummary(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; return `${c.length}/${c.pace}/${c.emotion}/${c.conflict}`; }
 
       function ensureReadyForApi() {
@@ -693,8 +816,9 @@ ${raw}
           s.updatedAt = nowIso();
           saveAll();
           renderAll();
-          els.status.textContent = "已生成";
-          els.status.title = "";
+          const cacheInfo = cacheUsageText(data);
+          els.status.textContent = cacheInfo ? "已生成 · " + cacheInfo : "已生成";
+          els.status.title = cacheInfo || "";
           els.status.className = "status ok";
         } catch (err) {
           const msg = readableError(err);
@@ -767,7 +891,33 @@ ${raw}
       function setBusy(v) { busy = !!v; [els.sendBtn, els.continueBtn, els.regenLastBtn, els.testBtn, els.summarizeBtn].forEach(b => { if (b) b.disabled = busy; }); }
 
       function buildRequestMessages(history) { const system = buildSystemPrompt(history); const limit = Math.max(4, Number(currentSession().memory.shortLimit || 36)); const recent = history.slice(-limit).map(m => ({ role: m.role === "assistant" ? "assistant" : "user", content: modelContent(m) })).filter(m => m.content.trim()); return [{ role: "system", content: system }, ...recent]; }
-      function buildSystemPrompt(history) { const s = currentSession(); const blocks = []; if (settings.fixedCore) blocks.push("【固定核心规则】\n" + FIXED_CORE_PROMPT); blocks.push("【当前回复控制】\n" + buildControlsPrompt(s.controls)); const drivePrompt = buildNovelDrivePrompt(s); if (drivePrompt) blocks.push("【小说底层驱动】\n" + drivePrompt); const charPrompt = buildCharactersPrompt(s); if (charPrompt) blocks.push("【当前登场角色】\n" + charPrompt); if (s.scenarioPrompt) blocks.push("【当前场景】\n" + s.scenarioPrompt); const mem = buildMemoryPrompt(s.memory); if (mem) blocks.push("【记忆系统】\n" + mem); const lore = selectTriggeredLore(history.map(selectedContent).join("\n"), false); if (lore.length) blocks.push("【本轮触发世界书】\n以下是世界书内部资料。根据可见性与备注决定其能否被角色或旁白直接揭示，内部秘密只能影响知情角色行为，不得提前剧透。\n" + lore.map(formatLore).join("\n\n")); blocks.push("【执行要求】\n优先承接用户最新输入。不得替用户角色发言或决定行动。本轮明确输入优先于控制面板，控制面板优先于角色卡，角色卡优先于固定规则。若角色关系值显示强控制、强嫉妒、强吸引、强依赖或高利用倾向，NPC 应主动把这些倾向转化为可见行动，而不是只停留在心理描写。"); return blocks.join("\n\n"); }
+      function buildSystemPrompt(history) {
+        const s = currentSession();
+        const blocks = [];
+
+        // 缓存友好顺序：最稳定、最少变化的内容必须放在最前面。
+        // DeepSeek 只对“从第 0 个 token 开始完全相同”的前缀进行缓存命中。
+        if (settings.fixedCore) blocks.push("【固定核心规则】\n" + FIXED_CORE_PROMPT);
+        blocks.push("【固定隐藏创作策略】\n以下内容属于作者层长期创作要求，不等于任何角色已知信息。必须持续执行，但不得直接复述、解释或泄露作者层意图；应自然融入剧情。\n" + HIDDEN_CREATIVE_STRATEGY);
+        if ((s.creativeStrategy || "").trim()) {
+          blocks.push("【强制创作策略】\n以下内容属于作者层长期创作要求，不等于任何角色已知信息。必须持续执行，但不要机械复述、解释策略或为了完成目标而突兀推进；应通过角色选择、信息差、事件安排、伏笔与后果自然实现。\n" + s.creativeStrategy.trim());
+        }
+        blocks.push("【固定执行原则】\n优先承接用户最新输入。不得替用户角色发言或决定行动。作者层创作策略属于长期导演要求，不得当作角色知识直接泄露；禁止上帝视角。用户本轮明确指令优先于回复控制，回复控制优先于角色卡的表现方式，但不得擅自修改角色核心事实。");
+        blocks.push("【当前回复控制】\n" + buildControlsPrompt(s.controls));
+
+        // 以下区块更可能随剧情变化，统一放在稳定前缀之后，减少前缀失配造成的缓存浪费。
+        const drivePrompt = buildNovelDrivePrompt(s);
+        if (drivePrompt) blocks.push("【小说底层驱动】\n" + drivePrompt);
+        const charPrompt = buildCharactersPrompt(s);
+        if (charPrompt) blocks.push("【当前登场角色】\n" + charPrompt);
+        if (s.scenarioPrompt) blocks.push("【当前场景】\n" + s.scenarioPrompt);
+        const mem = buildMemoryPrompt(s.memory);
+        if (mem) blocks.push("【记忆系统】\n" + mem);
+        const lore = selectTriggeredLore(history.map(selectedContent).join("\n"), false);
+        if (lore.length) blocks.push("【本轮触发世界书】\n以下是世界书内部资料。根据可见性与备注决定其能否被角色或旁白直接揭示，内部秘密只能影响知情角色行为，不得提前剧透。\n" + lore.map(formatLore).join("\n\n"));
+        blocks.push("【本轮动态执行要求】\n若角色关系值显示强控制、强嫉妒、强吸引、强依赖或高利用倾向，NPC 应把这些倾向转化为可见行动，而不是只停留在心理描写。世界书、人物当前状态和活跃记忆只用于本轮正确延续剧情，不得覆盖锁定设定。");
+        return blocks.join("\n\n");
+      }
       function buildControlsPrompt(c) { c = { ...DEFAULT_CONTROLS, ...(c || {}) }; const map = { length: {"短":"1-2段，直接回应。","中":"3-5段，兼顾互动和推进。","长":"5-8段，保留细节和节奏。","超长":"适合小说续写，可更完整描写互动和场景。"}, pace: {"慢热":"关系和情绪缓慢推进，但仍要有可见进展。","正常":"互动与事件推进保持均衡。","积极推进":"NPC 可主动采取行动，制造事件、冲突或关系转折。"}, dialogue: {"少对白":"偏叙事和动作。","平衡":"对白与描写均衡。","多对白":"更重视角色交锋和对话。"}, detail: {"轻描写":"简洁推进。","标准":"保留必要动作、神态、环境。","细腻":"注重细节、停顿和微妙反应。"}, initiative: {"被动回应":"NPC 主要回应用户，但不能原地空转。","适度主动":"NPC 可提问、试探、转移话题或改变行动。","强主动":"NPC 可设局、施压、诱导、打断计划、制造冲突或压缩选择空间。"}, emotion: {"克制":"情绪压低，互动含蓄。","暧昧":"允许试探和模糊边界。","高张力":"强化占有、嫉妒、回避、拉扯。","危险关系":"允许操控、隐瞒、利益交换、压迫感和不可靠亲近。"}, conflict: {"低":"轻微摩擦。","中":"可出现误解、试探和信息差。","高":"可出现摊牌、威胁、背叛、局势恶化或明显越界。"}, ending: {"自然停顿":"结尾留在可继续互动的位置。","抛出问题":"由角色提出问题。","留下选择":"给玩家几个行动方向。","推进事件":"结尾出现新动作、新信息或新变化。"} };
         return [`回复长度：${c.length}，${map.length[c.length] || ""}`,`剧情推进：${c.pace}，${map.pace[c.pace] || ""}`,`对白比例：${c.dialogue}，${map.dialogue[c.dialogue] || ""}`,`描写密度：${c.detail}，${map.detail[c.detail] || ""}`,`角色主动性：${c.initiative}，${map.initiative[c.initiative] || ""}`,`情感复杂度：${c.emotion}，${map.emotion[c.emotion] || ""}`,`冲突强度：${c.conflict}，${map.conflict[c.conflict] || ""}`,`结尾方式：${c.ending}，${map.ending[c.ending] || ""}`, c.extra ? `额外要求：${c.extra}` : ""].filter(Boolean).join("\n"); }
       function buildNovelDrivePrompt(s) {
@@ -795,16 +945,32 @@ ${raw}
       }
 
       
-      function buildCharactersPrompt(s) { return activeCharacters(s).map(c => { const primary = s.primaryCharacterId === c.id ? "（本轮主控角色）" : ""; return [`【${c.name || "未命名"}】${primary}`, c.role ? `定位：${c.role}` : "", c.alias?.length ? `别名：${c.alias.join("、")}` : "", c.publicProfile ? `公开设定：${c.publicProfile}` : "", c.privateProfile ? `隐藏设定：${c.privateProfile}\n隐藏设定只能影响角色行为，不得由旁白提前揭示。` : "", c.speechStyle ? `说话风格：${c.speechStyle}` : "", c.behaviorRules ? `行为规则：${c.behaviorRules}` : "", c.development ? `人物变化 / 当前状态：${c.development}` : "", `对玩家关系：${relationshipSummary(c)}`, c.relationNote ? `关系备注：${c.relationNote}` : ""].filter(Boolean).join("\n"); }).join("\n\n"); }
+      function buildCharactersPrompt(s) { return activeCharacters(s).slice().sort((a,b) => String(a.id || a.name || "").localeCompare(String(b.id || b.name || ""))).map(c => { const primary = s.primaryCharacterId === c.id ? "（本轮主控角色）" : ""; return [`【${c.name || "未命名"}】${primary}`, c.role ? `定位：${c.role}` : "", c.alias?.length ? `别名：${c.alias.join("、")}` : "", c.publicProfile ? `公开设定：${c.publicProfile}` : "", c.privateProfile ? `隐藏设定：${c.privateProfile}\n隐藏设定只能影响角色行为，不得由旁白提前揭示。` : "", c.speechStyle ? `说话风格：${c.speechStyle}` : "", c.behaviorRules ? `行为规则：${c.behaviorRules}` : "", c.development ? `人物变化 / 当前状态：${c.development}` : "", `对玩家关系：${relationshipSummary(c)}`, c.relationNote ? `关系备注：${c.relationNote}` : ""].filter(Boolean).join("\n"); }).join("\n\n"); }
       function relationshipSummary(c) { const r = { ...DEFAULT_REL, ...(c.relation || {}) }; const parts = RELATIONS.map(([key,label]) => { const v = Number(r[key] || 0); if (Math.abs(v) < 12) return ""; const level = Math.abs(v) >= 75 ? "极高" : Math.abs(v) >= 45 ? "较高" : "轻微"; return `${label}${v > 0 ? level : "偏低"}`; }).filter(Boolean); const behavior = []; if ((r.desire || 0) >= 55) behavior.push("对玩家存在明显吸引，成人亲密与性张力可自然出现；若剧情已进入亲密场景，应更直接地推进动作、对话和身体性描写，不必持续回避、含混或转成心理拉扯"); if ((r.affection || 0) >= 55) behavior.push("对玩家有明显好感，可主动靠近、关切或争取回应"); if ((r.trust || 0) < -20 || (r.suspicion || 0) >= 45) behavior.push("信任不足，亲近时会保留试探、隐瞒或信息差"); if ((r.jealousy || 0) >= 55) behavior.push("嫉妒明显，可能主动介入竞争关系、制造误会或迫使玩家表态"); if ((r.control || 0) >= 55) behavior.push("控制倾向较强，可能主动引导局面、制造独处、限制选择、设置条件或打断离开"); if ((r.dependence || 0) >= 55) behavior.push("依赖较强，容易通过索取、沉默、回避或情绪压力维持关系"); if ((r.resentment || 0) >= 55) behavior.push("怨恨较高，亲近中可能混入报复、试探、惩罚或故意刺痛"); if ((r.utility || 0) >= 55) behavior.push("利用倾向较高，可能把亲密、承诺、保护、信息或资源当作交换筹码"); const base = parts.length ? parts.join("，") : "关系尚不明确，按人设自然发展"; return behavior.length ? base + "。行为倾向：" + behavior.join("；") + "。这些倾向应转化为具体行动和对话策略，不要只停留在心理描写。" : base + "。"; }
-      function buildMemoryPrompt(m) { const blocks = []; if (m.lockedMemory) blocks.push("锁定记忆：\n" + m.lockedMemory); if (m.longMemory) blocks.push("长期记忆：\n" + m.longMemory); if (m.sceneSummary) blocks.push("当前场景摘要：\n" + m.sceneSummary); if (Array.isArray(m.archived) && m.archived.length) blocks.push("归档摘要：\n" + m.archived.slice(-3).map(a => `- ${a.title || "摘要"}：${a.summary || ""}`).join("\n")); return blocks.join("\n\n"); }
+      function buildMemoryPrompt(m) {
+        const blocks = [];
+        if (m.lockedMemory) blocks.push("锁定记忆（每轮发送，禁止自动覆盖）：\n" + m.lockedMemory);
+        const active = (m.activeMemory || "").trim() || (m.longMemory || "").trim();
+        if (active) blocks.push("活跃记忆（当前章节优先依据）：\n" + active);
+        if (m.sceneSummary) blocks.push("当前场景摘要：\n" + m.sceneSummary);
+        return blocks.join("\n\n");
+      }
       function formatLore(l) { return [`【${l.title || "未命名"}】`, l.type ? `类型：${l.type}` : "", `可见性：${l.visibility || "internal"}`, l.content ? `内容：${l.content}` : "", l.notes ? `备注：${l.notes}` : ""].filter(Boolean).join("\n"); }
-      function selectTriggeredLore(extraText="", preview=false) { const s = currentSession(); const activeNames = activeCharacters(s).flatMap(c => [c.name, ...(c.alias || [])]).filter(Boolean).join("\n"); const recent = s.messages.slice(-10).map(selectedContent).join("\n"); const hay = `${extraText}\n${activeNames}\n${s.scenarioPrompt || ""}\n${s.memory.sceneSummary || ""}\n${recent}`.toLowerCase(); const candidates = lorebook.filter(l => l.enabled && (l.scope !== "session" || !l.sessionId || l.sessionId === s.id)); const scored = candidates.map(l => { let score = l.alwaysOn ? 10000 : 0; for (const k of (l.keywords || [])) if (k && hay.includes(String(k).toLowerCase())) score += 1000; if (activeNames && l.title && activeNames.toLowerCase().includes(String(l.title).toLowerCase())) score += 500; score += Number(l.priority || 0); return { l, score }; }).filter(x => x.score > (x.l.alwaysOn ? 0 : Number(x.l.priority || 0))); const max = preview ? 8 : 6; return scored.sort((a,b)=>b.score-a.score).slice(0,max).map(x=>x.l); }
+      function selectTriggeredLore(extraText="", preview=false) { const s = currentSession(); const activeNames = activeCharacters(s).flatMap(c => [c.name, ...(c.alias || [])]).filter(Boolean).join("\n"); const recent = s.messages.slice(-10).map(selectedContent).join("\n"); const hay = `${extraText}\n${activeNames}\n${s.scenarioPrompt || ""}\n${s.memory.sceneSummary || ""}\n${recent}`.toLowerCase(); const candidates = lorebook.filter(l => l.enabled && (l.scope !== "session" || !l.sessionId || l.sessionId === s.id)); const scored = candidates.map(l => { let score = l.alwaysOn ? 10000 : 0; for (const k of (l.keywords || [])) if (k && hay.includes(String(k).toLowerCase())) score += 1000; if (activeNames && l.title && activeNames.toLowerCase().includes(String(l.title).toLowerCase())) score += 500; score += Number(l.priority || 0); return { l, score }; }).filter(x => x.score > (x.l.alwaysOn ? 0 : Number(x.l.priority || 0))); const max = preview ? 8 : 6; return scored.sort((a,b)=>(b.score-a.score) || String(a.l.id || a.l.title || "").localeCompare(String(b.l.id || b.l.title || ""))).slice(0,max).map(x=>x.l); }
 
       async function callDeepSeek(messages, opts={}) { if (!settings.workerUrl) throw new Error("请先填写 Worker 接口地址"); if (!settings.appToken) throw new Error("请先填写 APP_TOKEN"); const body = { model: opts.model || settings.model, messages, temperature: Number(settings.temperature || 0.9), max_tokens: Number(opts.maxTokens || settings.maxTokens || 2800), thinking: opts.thinking ?? settings.thinkingMode }; const res = await fetch(settings.workerUrl, { method: "POST", headers: { "Content-Type": "application/json", "X-App-Token": settings.appToken }, body: JSON.stringify(body) }); const text = await res.text(); let data; try { data = JSON.parse(text); } catch { data = { raw: text }; } if (!res.ok) { let detail = data.detail || data.error || data.message || text || "请求失败"; if (typeof detail === "object") detail = JSON.stringify(detail); try { const parsed = typeof detail === "string" ? JSON.parse(detail) : null; if (parsed) detail = parsed.error?.message || parsed.message || parsed.error || detail; } catch {} throw new Error(`HTTP ${res.status} · ${String(detail).slice(0, 1200)}`); } return data; }
       function parseReply(data) { const msg = data?.choices?.[0]?.message || {}; return { content: msg.content || data?.content || "", reasoning: msg.reasoning_content || msg.reasoning || data?.reasoning_content || "" }; }
+      function cacheUsageText(data) {
+        const u = data?.usage || {};
+        const hit = Number(u.prompt_cache_hit_tokens || 0);
+        const miss = Number(u.prompt_cache_miss_tokens || 0);
+        const total = hit + miss;
+        if (!total) return "";
+        const pct = Math.round(hit * 100 / total);
+        return `缓存 ${pct}% · 命中 ${hit.toLocaleString()} / 未命中 ${miss.toLocaleString()} tokens`;
+      }
 
-      function exportAll() { const payload = { version: APP_VERSION, exportedAt: nowIso(), settings: { ...settings, appToken: "" }, sessions, characters, lorebook }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `lily-rp-v6-12-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+      function exportAll() { const payload = { version: APP_VERSION, exportedAt: nowIso(), settings: { ...settings, appToken: "" }, sessions, characters, lorebook }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `lily-rp-v6-15-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
       function importAll() { const file = els.importFile.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const data = JSON.parse(reader.result); if (!confirm("导入会合并窗口、角色和世界书。继续？")) return; if (Array.isArray(data.sessions)) sessions = mergeById(sessions, data.sessions); if (Array.isArray(data.characters)) characters = mergeById(characters, data.characters); if (Array.isArray(data.lorebook)) lorebook = mergeById(lorebook, data.lorebook); if (data.settings) settings = { ...settings, ...data.settings, appToken: settings.appToken }; normalizeAll(); saveAll(); renderAll(); toast("导入完成"); } catch (e) { toast("导入失败：" + e.message, "err"); } finally { els.importFile.value = ""; } }; reader.readAsText(file); }
       function mergeById(oldArr, newArr) { const map = new Map(oldArr.map(x => [x.id, x])); newArr.forEach(x => { if (x && x.id) map.set(x.id, x); }); return Array.from(map.values()); }
     })();
